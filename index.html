@@ -103,9 +103,13 @@
         }
 
         function openPlayer(url) {
-            document.getElementById('videoPlayer').src = url;
-            document.getElementById('playerModal').style.display = 'flex';
-        }
+    let finalUrl = url;
+    if (url.includes('rutube.ru/video/')) {
+        finalUrl = url.replace('rutube.ru/video/', 'rutube.ru/play/embed/');
+    }
+    document.getElementById('videoPlayer').src = finalUrl;
+    document.getElementById('playerModal').style.display = 'flex';
+}
 
         function closePlayer() {
             document.getElementById('playerModal').style.display = 'none';
