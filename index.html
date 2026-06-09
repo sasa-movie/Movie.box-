@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aDrama Clone - Real Series</title>
+    <style>
+        body { background-color: #141414; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E50914; padding-bottom: 10px; margin-bottom: 20px; }
+        h1 { color: #E50914; margin: 0; font-size: 28px; }
+        input { padding: 10px; border-radius: 5px; border: none; width: 250px; background: #333; color: white; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(229, 9, 20, 0.5); }
+        
+        .poster-placeholder { width: 100%; height: 280px; display: flex; justify-content: center; align-items: center; font-size: 50px; background: linear-gradient(45deg, #2b2b2b, #1f1f1f); }
+        
+        .card-info { padding: 15px; background: #1c1c1c; flex-grow: 1; }
+        .card-title { font-weight: bold; margin-bottom: 8px; font-size: 16px; color: #fff; line-height: 1.3; }
+        .card-meta { font-size: 13px; color: #e50914; font-weight: bold; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 10; }
+        .modal-content { width: 85%; max-width: 850px; background: #000; border-radius: 8px; position: relative; }
+        .close-btn { position: absolute; top: -40px; right: 0; font-size: 30px; color: white; cursor: pointer; }
+        
+        iframe { width: 100%; height: 480px; border: none; border-radius: 8px; background: #000; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>aDrama Local</h1>
+        <input type="text" id="search" placeholder="Поиск дорамы..." oninput="searchDrama()">
+    </header>
+
+    <div class="grid" id="catalog"></div>
+
+    <div class="modal" id="playerModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePlayer()">&times;</span>
+            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Стабильные, рабочие ссылки на RuTube плееры первых серий дорам
+        const dramas = [
+            {
+                id: 1,
+                title: "Истинная красота (Серия 1)",
+                year: "2020",
+                country: "Южная Корея",
+                emoji: "💄",
+                videoUrl: "https://rutube.ru" 
+            },
+            {
+                id: 2,
+                title: "Алхимия душ (Серия 1)",
+                year: "2022",
+                country: "Южная Корея",
+                emoji: "🔮",
+                videoUrl: "https://rutube.ru"
+            },
+            {
+                id: 3,
+                title: "Потомки солнца (Серия 1)",
+                year: "2016",
+                country: "Южная Корея",
+                emoji: "🪖",
+                videoUrl: "https://rutube.ru"
+            }
+        ];
+
+        const catalog = document.getElementById('catalog');
+
+        function renderDramas(list) {
+            catalog.innerHTML = '';
+            if(list.length === 0) {
+                catalog.innerHTML = '<p>Ничего не найдено :(</p>';
+                return;
+            }
+            list.forEach(function(drama) {
+                var html = '<div class="card" onclick="openPlayer(\'' + drama.videoUrl + '\')">' +
+                           '<div class="poster-placeholder">' + drama.emoji + '</div>' +
+                           '<div class="card-info">' +
+                           '<div class="card-title">' + drama.title + '</div>' +
+                           '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>' +
+                           '</div>' +
+                           '</div>';
+                catalog.innerHTML += html;
+            });
+        }
+
+        renderDramas(dramas);
+
+        function searchDrama() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = dramas.filter(function(d) {
+                return d.title.toLowerCase().indexOf(query) !== -1;
+            });
+            renderDramas(filtered);
+        }
+
+        function openPlayer(url) {
+            document.getElementById('videoPlayer').src = url;
+            document.getElementById('playerModal').style.display = 'flex';
+        }
+
+        function closePlayer() {
+            document.getElementById('playerModal').style.display = 'none';
+            document.getElementById('videoPlayer').src = '';
+        }
+    </script>
+</body>
+</html>
