@@ -145,7 +145,7 @@ function loadDramasFromAPI() {
 
                 return {
                     id: item.id,
-                    title: item.russian  item.name  'Без названия',
+                    title: item.russian  ||   item.name  ||  'Без названия',
                     year: item.aired_on ? item.aired_on.split('-')[0] : '2026',
                     country: detectedCountry,
                     genre: 'Романтика',
