@@ -369,36 +369,43 @@ function closePlayer() {
 
 
 function loadDramasFromAPI() {
-    const apiUrl = 'https://shikimori.one/api/animes?kind=live_action&limit=50&order=aired_on';
+    // Исправили live_action (добавили _) и заменили сортировку на popularity для стабильности постеров
+    const apiUrl = 'https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity';
 
     fetch(apiUrl)
-        .then(response => response.json()) // Ждем ответ от сервера и переводим его в формат JSON
+        .then(response => response.json())
         .then(data => {
-            // Переделываем данные из интернета под формат нашего сайта
             dramas = data.map(item => {
+                // Автоматически определяем страну по названию тайтла
+                let detectedCountry = 'Южная Корея';
+                const nameLower = item.name ? item.name.toLowerCase() : '';
+                if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
+                    detectedCountry = 'Япония';
+                } else if (nameLower.includes('china') || nameLower.includes('chinese')) {
+                    detectedCountry = 'Китай';
+                }
+
+                // Защита от бага: если у дорамы нет постера в базе, ставим картинку-заглушку
+                let posterUrl = 'https://via.placeholder.com/225x318?text=No+Poster';
+                if (item.image && item.image.original) {
+                    posterUrl = 'https://shikimori.one' + item.image.original;
+                }
+
                 return {
                     id: item.id,
-                    title: item.russian || item.name, // Берем русское название, если есть
-                    year: item.aired_on ? item.aired_on.split('-')[0] : '2026', // Достаем год
-                    country: 'Южная Корея', // Shikimori в основном отдает Азию
-                    genre: 'Романтика', // Временная заглушка, пока учимся
-                    poster: 'https://shikimori.one' + item.image.original, // Собираем полную ссылку на постер
-                    episodes: [
-                        "https://shikimori.one/api/animes/${item.id}/video_online" 
-                    ] // Закрываем массив серий
-                }; // Закрываем объект дорамы внутри map
-            }); // Закрываем data.map
+                    title: item.russian  ||  item.name  ||  'Без названия',
+                    year: item.aired_on ? item.aired_on.split('-')[0] : '2026',
+                    country: detectedCountry,
+                    genre: 'Романтика',
+                    poster: posterUrl
+                };
+            });
 
-            // Как только всё скачалось — мгновенно отрисовываем на экране!
+            // Отрисовываем дорамы на главной странице
             renderDramas(dramas);
-        }) // Закрываем второй .then
+        })
         .catch(error => {
             console.error('Ошибка при скачивании базы дорам:', error);
-        });
-    } // Строка 400. Закрываем функцию loadDramasFromAPI
-
-// Строка 402. Запускаем автоматическое скачивание при входе на сайт
-loadDramasFromAPI();
 </script>
 </body>
 </html>
