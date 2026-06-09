@@ -101,26 +101,70 @@
         renderDramas(dramas);
 
         function searchDrama() {
-            const query = document.getElementById('search').value.toLowerCase();
-            const filtered = dramas.filter(function(d) {
-                return d.title.toLowerCase().indexOf(query) !== -1;
-            });
-            renderDramas(filtered);
-        }
+    const query = document.getElementById('search').value.toLowerCase();
+    const filtered = dramas.filter(function(d) {
+        return d.title.toLowerCase().indexOf(query) !== -1;
+    });
+    renderDramas(filtered);
+}
 
-        function openPlayer(url) {
+let currentDramaEpisodes = [];
+
+function openPlayer(dramaId) {
+    const drama = dramas.find(function(d) { return d.id === dramaId; });
+    if (!drama  !drama.episodes  drama.episodes.length === 0) return;
+
+    currentDramaEpisodes = drama.episodes;
+    
+    const buttonsContainer = document.getElementById('episodeButtons');
+    if (buttonsContainer) {
+        buttonsContainer.innerHTML = '';
+
+        currentDramaEpisodes.forEach(function(url, index) {
+            const btn = document.createElement('button');
+            btn.innerText = 'Серия ' + (index + 1);
+            
+            // Стили для кнопок серий
+            btn.style.padding = '8px 16px';
+            btn.style.background = index === 0 ? '#e50914' : '#333';
+            btn.style.color = '#fff';
+            btn.style.border = 'none';
+            btn.style.borderRadius = '4px';
+            btn.style.cursor = 'pointer';
+            btn.style.fontWeight = 'bold';
+            btn.style.margin = '5px';
+
+            btn.onclick = function() {
+                const allButtons = buttonsContainer.querySelectorAll('button');
+                allButtons.forEach(function(b) { b.style.background = '#333'; });
+                btn.style.background = '#e50914';
+                changeEpisode(url);
+            };
+
+            buttonsContainer.appendChild(btn);
+        });
+    }
+
+    changeEpisode(currentDramaEpisodes[0]);
+    document.getElementById('playerModal').style.display = 'flex';
+}
+
+function changeEpisode(url) {
     let finalUrl = url;
     if (url.includes('rutube.ru/video/')) {
         finalUrl = url.replace('rutube.ru/video/', 'rutube.ru/play/embed/');
     }
     document.getElementById('videoPlayer').src = finalUrl;
-    document.getElementById('playerModal').style.display = 'flex';
 }
 
-        function closePlayer() {
-            document.getElementById('playerModal').style.display = 'none';
-            document.getElementById('videoPlayer').src = '';
-        }
+function closePlayer() {
+    document.getElementById('playerModal').style.display = 'none';
+    document.getElementById('videoPlayer').src = '';
+    const buttonsContainer = document.getElementById('episodeButtons');
+    if (buttonsContainer) {
+        buttonsContainer.innerHTML = '';
+    }
+}
     </script>
 </body>
 </html>
