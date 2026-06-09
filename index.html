@@ -36,6 +36,35 @@ button.watched {
     border-color: #777777 !important;
     opacity: 0.7;
 }
+        .filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.filter-btn {
+    background-color: #222222;
+    color: #ffffff;
+    border: 1px solid #444444;
+    padding: 8px 16px;
+    border-radius: 20px; /* Круглые аккуратные кнопочки */
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: #333333;
+    border-color: #888888;
+}
+
+/* Стиль для кнопки, которая выбрана в данный момент */
+.filter-btn.active {
+    background-color: #e50914; /* Красный цвет активного фильтра */
+    border-color: #e50914;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
@@ -43,6 +72,12 @@ button.watched {
     <header>
         <h1>aDrama Local</h1>
         <input type="text" id="search" placeholder="Поиск дорамы..." oninput="searchDrama()">
+       <div class="filter-container">
+    <button class="filter-btn active" onclick="filterCountry('Все')">Все страны</button>
+    <button class="filter-btn" onclick="filterCountry('Южная Корея')">Южная Корея</button>
+    <button class="filter-btn" onclick="filterCountry('Китай')">Китай</button>
+    <button class="filter-btn" onclick="filterCountry('Япония')">Япония</button>
+</div> 
     </header>
 
     <div class="grid" id="catalog"></div>
@@ -143,6 +178,26 @@ function searchDrama() {
         return d.title.toLowerCase().indexOf(query) !== -1;
     });
     renderDramas(filtered);
+}
+    function filterCountry(countryName) {
+    // 1. Меняем внешний вид кнопок (делаем нажатую кнопку красной)
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.innerText.includes(countryName) || (countryName === 'Все' && btn.innerText.includes('Все'))) {
+            btn.classList.add('active');
+        }
+    });
+
+    // 2. Фильтруем сам список дорам
+    if (countryName === 'Все') {
+        renderDramas(dramas); // Показываем вообще все дорамы
+    } else {
+        const filtered = dramas.filter(function(drama) {
+            return drama.country === countryName;
+        });
+        renderDramas(filtered); // Показываем только выбранную страну
+    }
 }
 
 let currentDramaEpisodes = [];
