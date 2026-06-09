@@ -8,6 +8,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>aDrama Clone - Real Series</title>
     <style>
+        .genre-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0 25px 0; /* Делаем красивый отступ снизу до карточек */
+}
+
+.genre-btn {
+    background-color: #1a1a1a;
+    color: #aaaaaa;
+    border: 1px solid #333333;
+    padding: 6px 14px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.genre-btn:hover {
+    color: #ffffff;
+    border-color: #666666;
+}
+
+/* Синий или фиолетовый цвет для активного жанра */
+.genre-btn.active {
+    background-color: #0076ff;
+    border-color: #0076ff;
+    color: #ffffff;
+    font-weight: bold;
+}
         body { background-color: #141414; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E50914; padding-bottom: 10px; margin-bottom: 20px; }
         h1 { color: #E50914; margin: 0; font-size: 28px; }
@@ -92,6 +122,12 @@ button.watched {
 </div>
         <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
     </div>
+    <div class="genre-container">
+    <button class="genre-btn active" onclick="filterGenre('Все')">Все жанры</button>
+    <button class="genre-btn" onclick="filterGenre('Романтика')">Романтика</button>
+    <button class="genre-btn" onclick="filterGenre('Фэнтези')">Фэнтези</button>
+    <button class="genre-btn" onclick="filterGenre('Экшен')">Экшен</button>
+</div>
 
 <script>
 // Наш идеальный массив дорам со списками серий
@@ -101,6 +137,7 @@ const dramas = [
     title: "Истинная красота (Серия 1)",
     year: "2020",
     country: "Южная Корея",
+    genre: "Романтика,Комедия",
     poster: "https://th.bing.com/th/id/R.b3390a5a5871a54147bf74f860a042b0?rik=YW4YNjKJhJxWkw&pid=ImgRaw&r=0",
     episodes: [
       "https://rutube.ru/video/c9dfb2401624d8d22f751d8623ce9ca5/",
@@ -113,6 +150,7 @@ const dramas = [
     title: "Алхимия душ (Серия 1)",
     year: "2022",
     country: "Южная Корея",
+    genre: "Фэнтези",
     poster: "https://tse3.mm.bing.net/th/id/OIP.JIjJB42jFgok3rPZnzsnbQHaKm?cb=thfc1falcon2&rs=1&pid=ImgDetMain&o=7&rm=3",
     episodes: [
       "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
@@ -123,6 +161,7 @@ const dramas = [
     title: "Потомки солнца (Серия 1)",
     year: "2016",
     country: "Южная Корея",
+    genre: "драма",
     poster: "https://tse2.mm.bing.net/th/id/OIP.hopJJielSO3Y76bqxICZaAHaNK?cb=thfc1falcon2&rs=1&pid=ImgDetMain&o=7&rm=3",
     episodes: [
       "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
@@ -133,6 +172,7 @@ const dramas = [
     title: "(поезд в пусан)",
     year: "2016",
     country: "Южная Корея",
+    genre: "ужасы,боевик",
     poster: "https://tse2.mm.bing.net/th/id/OIP.lVBa_4RXLIOOVnqZik_J6QHaKi?cb=thfc1falcon2&rs=1&pid=ImgDetMain&o=7&rm=3",
     episodes: [
       "https://rutube.ru/video/875d239a86e6211c1ba8397adc0ea3f6/"
@@ -143,6 +183,7 @@ const dramas = [
     title: "акула начало",
     year: "2021",
     country: "Южная Корея",
+    genre: "боевик",
     poster: "https://staticdr.rmr.rocks/uploads/pics/04/99/880.jpg",
     episodes: [
       "https://rutube.ru/video/dfa206856673dcff546fc58458b87096/"
@@ -183,8 +224,11 @@ function searchDrama() {
     });
     renderDramas(filtered);
 }
-    function filterCountry(countryName) {
-    // 1. Меняем внешний вид кнопок (делаем нажатую кнопку красной)
+    // Функция фильтрации по странам
+function filterCountry(countryName) {
+    selectedCountry = countryName; // Запоминаем выбранную страну
+    
+    // Подсветка кнопок стран
     const buttons = document.querySelectorAll('.filter-btn');
     buttons.forEach(function(btn) {
         btn.classList.remove('active');
@@ -193,19 +237,43 @@ function searchDrama() {
         }
     });
 
-    // 2. Фильтруем сам список дорам
-    if (countryName === 'Все') {
-        renderDramas(dramas); // Показываем вообще все дорамы
-    } else {
-        const filtered = dramas.filter(function(drama) {
-            return drama.country === countryName;
-        });
-        renderDramas(filtered); // Показываем только выбранную страну
-    }
+    applyDoubleFilter(); // Запускаем общую фильтрацию
+}
+
+// Функция фильтрации по жанрам
+function filterGenre(genreName) {
+    selectedGenre = genreName; // Запоминаем выбранный жанр
+    
+    // Подсветка кнопок жанров
+    const buttons = document.querySelectorAll('.genre-btn');
+    buttons.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.innerText.includes(genreName) || (genreName === 'Все' && btn.innerText.includes('Все'))) {
+            btn.classList.add('active');
+        }
+    });
+
+    applyDoubleFilter(); // Запускаем общую фильтрацию
+}
+
+// Главная функция, которая совмещает оба фильтра сразу
+function applyDoubleFilter() {
+    const filtered = dramas.filter(function(drama) {
+        // Проверяем страну: либо выбрано "Все", либо страна совпадает
+        const matchCountry = (selectedCountry === 'Все' || drama.country === selectedCountry);
+        // Проверяем жанр: либо выбрано "Все", либо жанр совпадает
+        const matchGenre = (selectedGenre === 'Все' || drama.genre === selectedGenre);
+        
+        return matchCountry && matchGenre; // Карточка покажется, только если подошла по обоим условиям!
+    });
+
+    renderDramas(filtered); // Выводим результат на экран
 }
 
 let currentDramaEpisodes = [];
-let currentEpisodeIndex = 0; // Переменная теперь живет на своей отдельной строчке
+let currentEpisodeIndex = 0;
+let selectedCountry = 'Все';
+let selectedGenre = 'Все';// Переменная теперь живет на своей отдельной строчке
 
 // Функция открытия плеера и автоматического создания кнопок серий
 function openPlayer(dramaId) {
