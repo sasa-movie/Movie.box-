@@ -2,52 +2,58 @@
 <html lang="ru">
 <head>
     <title>aDrama Local — Смотреть дорамы онлайн</title>
-<meta name="description" content="Онлайн-кинотеатр aDrama Local. У нас можно удобно смотреть любимые корейские дорамы с переключением серий.">
-<meta name="keywords" content="adrama local, дорамы, смотреть дорамы, истинная красота, алхимия душ">
+    <meta name="description" content="Онлайн-кинотеатр aDrama Local. У нас можно удобно смотреть любикие корейские дорамы с переключением серий.">
+    <meta name="keywords" content="adrama local, дорамы, смотреть дорамы, истинная красота, алхимия душ">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>aDrama Clone - Real Series</title>
     <style>
-        .genre-container {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin: 10px 0 25px 0; /* Делаем красивый отступ снизу до карточек */
-}
-
-.genre-btn {
-    background-color: #1a1a1a;
-    color: #aaaaaa;
-    border: 1px solid #333333;
-    padding: 6px 14px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s ease;
-}
-
-.genre-btn:hover {
-    color: #ffffff;
-    border-color: #666666;
-}
-
-/* Синий или фиолетовый цвет для активного жанра */
-.genre-btn.active {
-    background-color: #0076ff;
-    border-color: #0076ff;
-    color: #ffffff;
-    font-weight: bold;
-}
-        body { background-color: #141414; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E50914; padding-bottom: 10px; margin-bottom: 20px; }
+        body { 
+            background-color: #141414; 
+            color: #fff; 
+            font-family: sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        header { 
+            display: flex; 
+            flex-direction: column;
+            gap: 15px;
+            align-items: center; 
+            border-bottom: 2px solid #E50914; 
+            padding-bottom: 15px; 
+            margin-bottom: 20px; 
+        }
+        @media (min-width: 768px) {
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
         h1 { color: #E50914; margin: 0; font-size: 28px; }
         input { padding: 10px; border-radius: 5px; border: none; width: 250px; background: #333; color: white; }
+        
+        .filter-container { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        .controls-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+        .filter-btn, .genre-btn {
+            background-color: #222222;
+            color: #ffffff;
+            border: 1px solid #444444;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover, .genre-btn:hover { background-color: #333333; border-color: #888888; }
+        .filter-btn.active { background-color: #e50914; border-color: #e50914; font-weight: bold; }
+        .genre-btn.active { background-color: #0076ff; border-color: #0076ff; color: #ffffff; font-weight: bold; }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .card { background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
         .card:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(229, 9, 20, 0.5); }
         
-        .poster-placeholder { width: 100%; height: 280px; display: flex; justify-content: center; align-items: center; font-size: 50px; background: linear-gradient(45deg, #2b2b2b, #1f1f1f); }
+        .poster-image { width: 100%; height: 280px; object-fit: cover; background: #2b2b2b; }
         
         .card-info { padding: 15px; background: #1c1c1c; flex-grow: 1; }
         .card-title { font-weight: bold; margin-bottom: 8px; font-size: 16px; color: #fff; line-height: 1.3; }
@@ -58,144 +64,46 @@
         .close-btn { position: absolute; top: -40px; right: 0; font-size: 30px; color: white; cursor: pointer; }
         
         iframe { width: 100%; height: 480px; border: none; border-radius: 8px; background: #000; }
-       iframe { width: 100%; height: 480px; border: none; border-radius: 8px; background: #000; }
-
-button.watched {
-    background-color: #555555 !important;
-    color: #bbbbbb !important;
-    border-color: #777777 !important;
-    opacity: 0.7;
-}
-        .filter-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-.filter-btn {
-    background-color: #222222;
-    color: #ffffff;
-    border: 1px solid #444444;
-    padding: 8px 16px;
-    border-radius: 20px; /* Круглые аккуратные кнопочки */
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.filter-btn:hover {
-    background-color: #333333;
-    border-color: #888888;
-}
-
-/* Стиль для кнопки, которая выбрана в данный момент */
-.filter-btn.active {
-    background-color: #e50914; /* Красный цвет активного фильтра */
-    border-color: #e50914;
-    font-weight: bold;
-}
-</style>
+    </style>
 </head>
 <body>
 
     <header>
         <h1>aDrama Local</h1>
         <input type="text" id="search" placeholder="Поиск дорамы..." oninput="searchDrama()">
-       <div class="filter-container">
-    <button class="filter-btn active" onclick="filterCountry('Все')">Все страны</button>
-    <button class="filter-btn" onclick="filterCountry('Южная Корея')">Южная Корея</button>
-    <button class="filter-btn" onclick="filterCountry('Китай')">Китай</button>
-    <button class="filter-btn" onclick="filterCountry('Япония')">Япония</button>
-    <div class="genre-container">
-    <button class="genre-btn active" onclick="filterGenre('Все')">Все жанры</button>
-    <button class="genre-btn" onclick="filterGenre('Романтика')">Романтика</button>
-    <button class="genre-btn" onclick="filterGenre('Фэнтези')">Фэнтези</button>
-    <button class="genre-btn" onclick="filterGenre('Экшен')">Экшен</button>
-</div>
-</div> 
+        <div class="filter-container">
+            <div class="controls-row">
+                <button class="filter-btn active" onclick="filterCountry('Все')">Все страны</button>
+                <button class="filter-btn" onclick="filterCountry('Южная Корея')">Южная Корея</button>
+                <button class="filter-btn" onclick="filterCountry('Китай')">Китай</button>
+                <button class="filter-btn" onclick="filterCountry('Япония')">Япония</button>
+            </div>
+            <div class="controls-row">
+                <button class="genre-btn active" onclick="filterGenre('Все')">Все жанры</button>
+                <button class="genre-btn" onclick="filterGenre('Романтика')">Романтика</button>
+                <button class="genre-btn" onclick="filterGenre('Фэнтези')">Фэнтези</button>
+                <button class="genre-btn" onclick="filterGenre('Экшен')">Экшен</button>
+            </div>
+        </div> 
     </header>
 
     <div class="grid" id="catalog"></div>
 
     <div class="modal" id="playerModal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closePlayer()">&times;</span>
-        <iframe id="videoPlayer" src="" allowfullscreen></iframe>
-        <div class="navigation-controls">
-    <button id="prevEpisodeBtn" onclick="navigateEpisode(-1)">◀ Предыдущая</button>
-    <button id="nextEpisodeBtn" onclick="navigateEpisode(1)">Следующая ▶</button>
-</div>
-        <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePlayer()">&times;</span>
+            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+        </div>
     </div>
-    
 
 <script>
-    let dramas = []; // Теперь эта переменная главная и видна всему файлу!
-// Наш идеальный массив дорам со списками серий
-const oldDramas = [
-  {
-    id: 1,
-    title: "Истинная красота (Серия 1)",
-    year: "2020",
-    country: "Южная Корея",
-    genre: "Романтика,Комедия",
-    poster: "https://th.bing.com/th/id/R.b3390a5a5871a54147bf74f860a042b0?rik=YW4YNjKJhJxWkw&pid=ImgRaw&r=0",
-    episodes: [
-      "https://rutube.ru/video/c9dfb2401624d8d22f751d8623ce9ca5/",
-      "https://rutube.ru/video/14c581f8fc3fb00ed233b8e19c3a81da/",
-      "https://rutube.ru/video/622060ca338b3a1149ebeb8af0d68edb/"
-    ]
-  },
-  {
-    id: 2,
-    title: "Алхимия душ (Серия 1)",
-    year: "2022",
-    country: "Южная Корея",
-    genre: "Фэнтези",
-    poster: "https://tse3.mm.bing.net/th/id/OIP.JIjJB42jFgok3rPZnzsnbQHaKm?cb=thfc1falcon2&rs=1&pid=ImgDetMain&o=7&rm=3",
-    episodes: [
-      "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
-    ]
-  },
-  {
-    id: 3,
-    title: "Потомки солнца (Серия 1)",
-    year: "2016",
-    country: "Южная Корея",
-    genre: "драма",
-    poster: "https://tse2.mm.bing.net/th/id/OIP.hopJJielSO3Y76bqxICZaAHaNK?cb=thfc1falcon2&rs=1&pid=ImgDetMain&o=7&rm=3",
-    episodes: [
-      "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
-    ]
-  }, // <-- Вот теперь эта запятая отделяет третью дораму от четвертой!
-  {
-    id: 4,
-    title: "(поезд в пусан)",
-    year: "2016",
-    country: "Южная Корея",
-    genre: "ужасы,боевик",
-    poster: "https://tse2.mm.bing.net/th/id/OIP.lVBa_4RXLIOOVnqZik_J6QHaKi?cb=thfc1falcon2&rs=1&pid=ImgDetMain&o=7&rm=3",
-    episodes: [
-      "https://rutube.ru/video/875d239a86e6211c1ba8397adc0ea3f6/"
-    ]
-  },
- {
-    id: 5,
-    title: "акула начало",
-    year: "2021",
-    country: "Южная Корея",
-    genre: "боевик",
-    poster: "https://staticdr.rmr.rocks/uploads/pics/04/99/880.jpg",
-    episodes: [
-      "https://rutube.ru/video/dfa206856673dcff546fc58458b87096/"
-    ]
-    }
-    ];
-
+// Глобальные переменные для хранения базы и состояния фильтров
+let dramas = []; 
+let selectedCountry = 'Все';
+let selectedGenre = 'Все';
 const catalog = document.getElementById('catalog');
 
-// Функция отрисовки карточек дорам на главном экране
+// 1. Функция отрисовки карточек на экране
 function renderDramas(list) {
     catalog.innerHTML = '';
     if (list.length === 0) {
@@ -214,82 +122,8 @@ function renderDramas(list) {
         catalog.innerHTML += html;
     });
 }
-// Запускаем автоматическое скачивание дорам из интернета при старте сайта
-loadDramasFromAPI();
 
-// Функция живого поиска по названию
-function searchDrama() {
-    const query = document.getElementById('search').value.toLowerCase();
-    const filtered = dramas.filter(function(d) {
-        return d.title.toLowerCase().indexOf(query) !== -1;
-    });
-    renderDramas(filtered);
-}
-    // Функция фильтрации по странам
-function filterCountry(countryName) {
-    selectedCountry = countryName; // Запоминаем выбранную страну
-    
-    // Подсветка кнопок стран
-    const buttons = document.querySelectorAll('.filter-btn');
-    buttons.forEach(function(btn) {
-        btn.classList.remove('active');
-        if (btn.innerText.includes(countryName) || (countryName === 'Все' && btn.innerText.includes('Все'))) {
-            btn.classList.add('active');
-        }
-    });
-
-    applyDoubleFilter(); // Запускаем общую фильтрацию
-}
-
-// Функция фильтрации по жанрам
-function filterGenre(genreName) {
-    selectedGenre = genreName; // Запоминаем выбранный жанр
-    
-    // Подсветка кнопок жанров
-    const buttons = document.querySelectorAll('.genre-btn');
-    buttons.forEach(function(btn) {
-        btn.classList.remove('active');
-        if (btn.innerText.includes(genreName) || (genreName === 'Все' && btn.innerText.includes('Все'))) {
-            btn.classList.add('active');
-        }
-    });
-
-    applyDoubleFilter(); // Запускаем общую фильтрацию
-}
-
-// Главная функция, которая совмещает оба фильтра сразу
-function applyDoubleFilter() {
-    const filtered = dramas.filter(function(drama) {
-        // Проверяем страну: либо выбрано "Все", либо страна совпадает
-        const matchCountry = (selectedCountry === 'Все' || drama.country === selectedCountry);
-        // Проверяем жанр: либо выбрано "Все", либо жанр совпадает
-        const matchGenre = (selectedGenre === 'Все' || drama.genre === selectedGenre);
-        
-        return matchCountry && matchGenre; // Карточка покажется, только если подошла по обоим условиям!
-    });
-
-    renderDramas(filtered); // Выводим результат на экран
-}
-
-let currentDramaEpisodes = [];
-let currentEpisodeIndex = 0;
-let selectedCountry = 'Все';
-let selectedGenre = 'Все';// Переменная теперь живет на своей отдельной строчке
-
-function openPlayer(dramaId) {
-    const drama = dramas.find(function(d) { return d.id === dramaId; });
-    if (!drama) return;
-
-    const playerIframe = document.getElementById('videoPlayer');
-    playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
-
-    document.getElementById('playerModal').style.display = 'flex';
-}
-
-function closePlayer() {
-    document.getElementById('playerModal').style.display = 'none';
-    document.getElementById('videoPlayer').src = '';
-}
+// 2. Функция скачивания актуальной базы дорам с сервера Shikimori
 function loadDramasFromAPI() {
     const apiUrl = "https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity";
     fetch(apiUrl)
@@ -311,7 +145,7 @@ function loadDramasFromAPI() {
 
                 return {
                     id: item.id,
-                    title: item.russian  ||  item.name  ||  'Без названия',
+                    title: item.russian  item.name  'Без названия',
                     year: item.aired_on ? item.aired_on.split('-')[0] : '2026',
                     country: detectedCountry,
                     genre: 'Романтика',
@@ -319,14 +153,75 @@ function loadDramasFromAPI() {
                 };
             });
 
+            // Сразу выводим загруженные дорамы на экран
             renderDramas(dramas);
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Ошибка при получении данных с API:', error);
         });
 }
 
-// Запускаем её работу
+// 3. Функция живого текстового поиска
+function searchDrama() {
+    const query = document.getElementById('search').value.toLowerCase();
+    const filtered = dramas.filter(function(d) {
+        return d.title.toLowerCase().indexOf(query) !== -1;
+    });
+    renderDramas(filtered);
+}
+
+// 4. Логика фильтрации (Страны и Жанры)
+function filterCountry(countryName) {
+    selectedCountry = countryName;
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.innerText.includes(countryName) || (countryName === 'Все' && btn.innerText.includes('Все'))) {
+            btn.classList.add('active');
+        }
+    });
+    applyDoubleFilter();
+}
+
+function filterGenre(genreName) {
+    selectedGenre = genreName;
+    const buttons = document.querySelectorAll('.genre-btn');
+    buttons.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.innerText.includes(genreName) || (genreName === 'Все' && btn.innerText.includes('Все'))) {
+            btn.classList.add('active');
+        }
+    });
+    applyDoubleFilter();
+}
+
+function applyDoubleFilter() {
+    const filtered = dramas.filter(function(drama) {
+        const matchCountry = (selectedCountry === 'Все' || drama.country === selectedCountry);
+        const matchGenre = (selectedGenre === 'Все' || drama.genre === selectedGenre);
+        return matchCountry && matchGenre;
+    });
+    renderDramas(filtered);
+}
+
+// 5. Управление окном медиаплеера
+function openPlayer(dramaId) {
+    const drama = dramas.find(function(d) { return d.id === dramaId; });
+    if (!drama) return;
+
+    const playerIframe = document.getElementById('videoPlayer');
+    playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
+
+    document.getElementById('playerModal').style.display = 'flex';
+}
+
+// 6. Закрытие плеера
+function closePlayer() {
+    document.getElementById('playerModal').style.display = 'none';
+    document.getElementById('videoPlayer').src = '';
+}
+
+// Запуск автоматического скачивания дорам при старте сайта (теперь строго в самом низу кода!)
 loadDramasFromAPI();
 </script>
 </body>
