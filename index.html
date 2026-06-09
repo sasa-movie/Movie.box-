@@ -189,12 +189,15 @@ function openPlayer(dramaId) {
 
 // Функция подмены ссылки для корректного отображения Rutube во фрейме
 function changeEpisode(url, dramaId, episodeIndex, buttonElement) {
-    var iframe = document.getElementById('rutubePlayer');
+    // МЕНЯЕМ 'rutubePlayer' на 'videoPlayer', чтобы скрипт точно нашёл ваш тег iframe
+    var iframe = document.getElementById('videoPlayer');
     if (!iframe) return;
 
-    // Превращаем обычную ссылку в ссылку для плеера
-    var embedUrl = url.replace('rutube.ru/video/', 'rutube.ru/play/embed/');
-    iframe.src = embedUrl;
+    let finalUrl = url;
+    if (url.includes('rutube.ru/video/')) {
+        finalUrl = url.replace('rutube.ru/video/', 'rutube.ru/play/embed/');
+    }
+    iframe.src = finalUrl;
 
     // Запоминаем в память браузера, что эта серия просмотрена
     if (dramaId !== undefined && episodeIndex !== undefined) {
