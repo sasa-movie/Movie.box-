@@ -132,7 +132,7 @@ button.watched {
 
 <script>
 // Наш идеальный массив дорам со списками серий
-const dramas = [
+const oldDramas = [
   {
     id: 1,
     title: "Истинная красота (Серия 1)",
@@ -363,6 +363,39 @@ function closePlayer() {
         // Переключаем серию и передаем кнопку для покраски в серый
         changeEpisode(currentDramaEpisodes[newIndex], undefined, newIndex, buttons[newIndex]);
     }
+}  
+// Создаем пустой массив, куда JavaScript запишет скачанные дорамы
+let dramas = [];
+
+function loadDramasFromAPI() {
+    // URL-адрес запроса к базе Shikimori (ищем популярные сериалы типа "дорама")
+    const apiUrl = 'https://shikimori.one/api/animes?kind=tv_special&limit=20&order=popularity';
+
+    fetch(apiUrl)
+        .then(response => response.json()) // Ждем ответ от сервера и переводим его в формат JSON
+        .then(data => {
+            // Переделываем данные из интернета под формат нашего сайта
+            dramas = data.map(item => {
+                return {
+                    id: item.id,
+                    title: item.russian || item.name, // Берем русское название, если есть
+                    year: item.aired_on ? item.aired_on.split('-')[0] : '2026', // Достаем год
+                    country: 'Южная Корея', // Shikimori в основном отдает Азию
+                    genre: 'Романтика', // Временная заглушка, пока учимся
+                    poster: 'https://shikimori.one' + item.image.original, // Собираем полную ссылку на постер
+                    episodes: [
+                        // Генерируем тестовые серии для проверки плеера
+                        "https://rutube.ru/video/c9dfb2401624d8d22f751d8623ce9ca5/",
+                        "https://rutube.ru/video/c9dfb2401624d8d22f751d8623ce9ca5/"
+                    ]
+                };
+            });
+            // Запускаем автоматическое скачивание при входе на сайт
+            loadDramasFromAPI();
+        })
+        .catch(error => {
+            console.error('Ошибка при скачивании базы дорам:', error);
+        });
 }
 </script>
 </body>
