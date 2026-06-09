@@ -86,6 +86,10 @@ button.watched {
     <div class="modal-content">
         <span class="close-btn" onclick="closePlayer()">&times;</span>
         <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+        <div class="navigation-controls">
+    <button id="prevEpisodeBtn" onclick="navigateEpisode(-1)">◀ Предыдущая</button>
+    <button id="nextEpisodeBtn" onclick="navigateEpisode(1)">Следующая ▶</button>
+</div>
         <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
     </div>
 
@@ -203,7 +207,7 @@ function searchDrama() {
 let currentDramaEpisodes = [];
 
 // Функция открытия плеера и автоматического создания кнопок серий
-function openPlayer(dramaId) {
+function let currentEpisodeIndex = 0; openPlayer(dramaId) {
     const drama = dramas.find(function(d) { return d.id === dramaId; });
     if (!drama  ||  !drama.episodes  ||   drama.episodes.length === 0) return;
 
@@ -244,9 +248,11 @@ function openPlayer(dramaId) {
 
 // Функция подмены ссылки для корректного отображения Rutube во фрейме
 function changeEpisode(url, dramaId, episodeIndex, buttonElement) {
-    // МЕНЯЕМ 'rutubePlayer' на 'videoPlayer', чтобы скрипт точно нашёл ваш тег iframe
+    if (episodeIndex !== undefined) currentEpisodeIndex = episodeIndex; // <-- ДОБАВИТЬ ЭТУ СТРОЧКУ
+    
     var iframe = document.getElementById('videoPlayer');
     if (!iframe) return;
+    // ... весь остальной ваш код функции без изменений ...
 
     let finalUrl = url;
     if (url.includes('rutube.ru/video/')) {
@@ -274,6 +280,18 @@ function closePlayer() {
     const buttonsContainer = document.getElementById('episodeButtons');
     if (buttonsContainer) {
         buttonsContainer.innerHTML = '';
+    }
+}
+    function navigateEpisode(direction) {
+    let newIndex = currentEpisodeIndex + direction;
+    
+    // Проверяем, что серия существует (не уходим меньше 0 и больше доступных серий)
+    if (newIndex >= 0 && newIndex < currentDramaEpisodes.length) {
+        const buttonsContainer = document.getElementById('episodeButtons');
+        const buttons = buttonsContainer ? buttonsContainer.querySelectorAll('button') : [];
+        
+        // Переключаем серию и передаем кнопку для покраски в серый
+        changeEpisode(currentDramaEpisodes[newIndex], undefined, newIndex, buttons[newIndex]);
     }
 }
 </script>
