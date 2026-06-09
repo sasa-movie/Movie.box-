@@ -368,15 +368,35 @@ function closePlayer() {
 }  
 
 
+function openPlayer(dramaId) {
+    // Ищем дораму в массиве
+    const drama = dramas.find(function(d) { return d.id === dramaId; });
+    if (!drama) return;
+
+    // Вставляем автоматический iframe-плеер Shikimori по ID дорамы
+    const playerIframe = document.getElementById('videoPlayer');
+    playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
+
+    // Открываем модальное окно на экране
+    document.getElementById('playerModal').style.display = 'flex';
+}
+
+function closePlayer() {
+    // Закрываем окно и сбрасываем ссылку плеера, чтобы видео не пело на фоне
+    document.getElementById('playerModal').style.display = 'none';
+    const playerIframe = document.getElementById('videoPlayer');
+    playerIframe.src = '';
+}
+
 function loadDramasFromAPI() {
-    // Исправили live_action (добавили _) и заменили сортировку на popularity для стабильности постеров
+    // В apiUrl строго пишем live_action через нижнее подчеркивание, БЕЗ пробелов!
     const apiUrl = 'https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity';
 
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
             dramas = data.map(item => {
-                // Автоматически определяем страну по названию тайтла
+                // Автоматически распределяем дорамы по странам
                 let detectedCountry = 'Южная Корея';
                 const nameLower = item.name ? item.name.toLowerCase() : '';
                 if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
@@ -385,15 +405,15 @@ function loadDramasFromAPI() {
                     detectedCountry = 'Китай';
                 }
 
-                // Защита от бага: если у дорамы нет постера в базе, ставим картинку-заглушку
-                let posterUrl = 'https://via.placeholder.com/225x318?text=No+Poster';
+                // Защищаем код от падения, если у сериала на сервере нет картинки
+                let posterUrl = 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=225&auto=format&fit=crop';
                 if (item.image && item.image.original) {
                     posterUrl = 'https://shikimori.one' + item.image.original;
                 }
 
                 return {
                     id: item.id,
-                    title: item.russian  ||  item.name  ||  'Без названия',
+                    title: item.russian  item.name  'Без названия',
                     year: item.aired_on ? item.aired_on.split('-')[0] : '2026',
                     country: detectedCountry,
                     genre: 'Романтика',
@@ -401,13 +421,17 @@ function loadDramasFromAPI() {
                 };
             });
 
-            // Отрисовываем дорамы на главной странице
+            // Передаем готовый массив дорам в функцию отрисовки интерфейса
             renderDramas(dramas);
         })
         .catch(error => {
             console.error('Ошибка при скачивании базы дорам:', error);
         });
 }
+
+// Запускаем скачивание базы дорам сразу при загрузке страницы
+loadDramasFromAPI();
+
 </script>
 </body>
 </html>
