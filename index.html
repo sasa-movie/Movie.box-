@@ -42,7 +42,7 @@
         <iframe id="videoPlayer" src="" allowfullscreen></iframe>
         <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
     </div>
-</div>
+
 
     <script>
         // Стабильные, рабочие ссылки на RuTube плееры первых серий дорам
@@ -123,7 +123,7 @@ function openPlayer(dramaId) {
             const btn = document.createElement('button');
             btn.innerText = 'Серия ' + (index + 1);
             
-            // Стили для кнопок серий
+            // Красивые стили для кнопок серий
             btn.style.padding = '8px 16px';
             btn.style.background = index === 0 ? '#e50914' : '#333';
             btn.style.color = '#fff';
