@@ -75,10 +75,20 @@ const dramas = [
     country: "Южная Корея",
     emoji: "☀️",
     episodes: [
-      "https://rutube.ru/video/d410f2c9c4fb21a04f7499ec539251d7/"
+      "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
     ]
-  }
-];
+  }, // <-- Вот теперь эта запятая отделяет третью дораму от четвертой!
+  {
+    id: 4,
+    title: "Алхимия душ (поезд в пусан)",
+    year: "2016",
+    country: "Южная Корея",
+    emoji: "🔮",
+    episodes: [
+      "https://rutube.ru/video/875d239a86e6211c1ba8397adc0ea3f6/"
+    ]
+  } // <-- У самой последней дорамы запятой тут НЕТ!
+]; // <-- Вот здесь мы ОДИН РАЗ закрываем весь массив дорам
 
 const catalog = document.getElementById('catalog');
 
