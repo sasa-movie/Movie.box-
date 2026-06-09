@@ -291,7 +291,7 @@ function closePlayer() {
     document.getElementById('videoPlayer').src = '';
 }
 function loadDramasFromAPI() {
-    const apiUrl = 'https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity';
+    const apiUrl = "https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity";
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
