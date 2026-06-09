@@ -107,6 +107,12 @@ button.watched {
     <button class="filter-btn" onclick="filterCountry('Южная Корея')">Южная Корея</button>
     <button class="filter-btn" onclick="filterCountry('Китай')">Китай</button>
     <button class="filter-btn" onclick="filterCountry('Япония')">Япония</button>
+    <div class="genre-container">
+    <button class="genre-btn active" onclick="filterGenre('Все')">Все жанры</button>
+    <button class="genre-btn" onclick="filterGenre('Романтика')">Романтика</button>
+    <button class="genre-btn" onclick="filterGenre('Фэнтези')">Фэнтези</button>
+    <button class="genre-btn" onclick="filterGenre('Экшен')">Экшен</button>
+</div>
 </div> 
     </header>
 
@@ -122,12 +128,7 @@ button.watched {
 </div>
         <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
     </div>
-    <div class="genre-container">
-    <button class="genre-btn active" onclick="filterGenre('Все')">Все жанры</button>
-    <button class="genre-btn" onclick="filterGenre('Романтика')">Романтика</button>
-    <button class="genre-btn" onclick="filterGenre('Фэнтези')">Фэнтези</button>
-    <button class="genre-btn" onclick="filterGenre('Экшен')">Экшен</button>
-</div>
+    
 
 <script>
 // Наш идеальный массив дорам со списками серий
