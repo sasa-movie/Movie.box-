@@ -43,10 +43,9 @@
         <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
     </div>
 
-
-    <script>
-        // Стабильные, рабочие ссылки на RuTube плееры первых серий дорам
-       const dramas = [
+<script>
+// Наш идеальный массив дорам со списками серий
+const dramas = [
   {
     id: 1,
     title: "Истинная красота (Серия 1)",
@@ -79,31 +78,35 @@
       "https://rutube.ru/video/d410f2c9c4fb21a04f7499ec539251d7/"
     ]
   }
-]; 
+];
 
-        const catalog = document.getElementById('catalog');
+const catalog = document.getElementById('catalog');
 
-        function renderDramas(list) {
-            catalog.innerHTML = '';
-            if(list.length === 0) {
-                catalog.innerHTML = '<p>Ничего не найдено :(</p>';
-                return;
-            }
-            list.forEach(function(drama) {
-               var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';  +
-                           '<div class="poster-placeholder">' + drama.emoji + '</div>' +
-                           '<div class="card-info">' +
-                           '<div class="card-title">' + drama.title + '</div>' +
-                           '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>' +
-                           '</div>' +
-                           '</div>';
-                catalog.innerHTML += html;
-            });
-        }
+// Функция отрисовки карточек дорам на главном экране
+function renderDramas(list) {
+    catalog.innerHTML = '';
+    if (list.length === 0) {
+        catalog.innerHTML = '<p>Ничего не найдено :(</p>';
+        return;
+    }
 
-        renderDramas(dramas);
+    list.forEach(function(drama) {
+        var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';
+        html += '<div class="poster-placeholder">' + drama.emoji + '</div>';
+        html += '<div class="card-info">';
+        html += '<div class="card-title">' + drama.title + '</div>';
+        html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
+        html += '</div>';
+        html += '</div>';
+        catalog.innerHTML += html;
+    });
+}
 
-        function searchDrama() {
+// Показываем дорамы при первой загрузке страницы
+renderDramas(dramas);
+
+// Функция живого поиска по названию
+function searchDrama() {
     const query = document.getElementById('search').value.toLowerCase();
     const filtered = dramas.filter(function(d) {
         return d.title.toLowerCase().indexOf(query) !== -1;
@@ -113,9 +116,10 @@
 
 let currentDramaEpisodes = [];
 
+// Функция открытия плеера и автоматического создания кнопок серий
 function openPlayer(dramaId) {
     const drama = dramas.find(function(d) { return d.id === dramaId; });
-    if (drama.episodes  drama.episodes.length === 0) return;
+    if (!drama  !drama.episodes  drama.episodes.length === 0) return;
 
     currentDramaEpisodes = drama.episodes;
     
@@ -127,7 +131,7 @@ function openPlayer(dramaId) {
             const btn = document.createElement('button');
             btn.innerText = 'Серия ' + (index + 1);
             
-            // Красивые стили для кнопок серий
+            // Стильное оформление кнопок серий в стиле Netflix
             btn.style.padding = '8px 16px';
             btn.style.background = index === 0 ? '#e50914' : '#333';
             btn.style.color = '#fff';
@@ -152,6 +156,7 @@ function openPlayer(dramaId) {
     document.getElementById('playerModal').style.display = 'flex';
 }
 
+// Функция подмены ссылки для корректного отображения Rutube во фрейме
 function changeEpisode(url) {
     let finalUrl = url;
     if (url.includes('rutube.ru/video/')) {
@@ -160,6 +165,7 @@ function changeEpisode(url) {
     document.getElementById('videoPlayer').src = finalUrl;
 }
 
+// Функция закрытия плеера и очистки ресурсов
 function closePlayer() {
     document.getElementById('playerModal').style.display = 'none';
     document.getElementById('videoPlayer').src = '';
@@ -168,6 +174,6 @@ function closePlayer() {
         buttonsContainer.innerHTML = '';
     }
 }
-    </script>
+</script>
 </body>
 </html>
