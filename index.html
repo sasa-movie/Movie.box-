@@ -179,15 +179,11 @@ function openPlayer(dramaId) {
         });
     }
 
-    // Здесь ваш старый код открытия модального окна (например, playerModal.style.display = 'block';)
-    var modal = document.getElementById('playerModal');
-    if (modal) modal.style.display = 'block';
+    // Включаем сразу первую серию при открытии плеера
+    var firstBtn = buttonsContainer ? buttonsContainer.querySelector('button') : null;
+    changeEpisode(currentDramaEpisodes[0], dramaId, 0, firstBtn);
     
-    // Включаем сразу первую серию
-    changeEpisode(currentDramaEpisodes[0], dramaId, 0, buttonsContainer.querySelector('button'));
-}
-
-    changeEpisode(currentDramaEpisodes[0]);
+    // Открываем само модальное окно
     document.getElementById('playerModal').style.display = 'flex';
 }
 
