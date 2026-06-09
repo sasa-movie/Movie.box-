@@ -40,7 +40,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
-        </div>
+        <div id="episodeButtons" style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
     </div>
 
     <script>
@@ -52,23 +52,29 @@
                 year: "2020",
                 country: "Южная Корея",
                 emoji: "💄",
-                videoUrl: "https://rutube.ru/video/c9dfb2401624d8d22f751d8623ce9ca5/" 
-            },
-            {
+                episodes: [
+                 "https://rutube.ru/video/c9dfb2401624d8d22f751d8623ce9ca5/"
+                 "https://rutube.ru/video/14c581f8fc3fb00ed233b8e19c3a81da/"
+                  "https://rutube.ru/video/622060ca338b3a1149ebeb8af0d68edb/"
+                ]
+               },
+               {
                 id: 2,
                 title: "Алхимия душ (Серия 1)",
                 year: "2022",
                 country: "Южная Корея",
                 emoji: "🔮",
-                videoUrl: "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
-            },
-            {
+                episodes: [ "https://rutube.ru/video/a806f2e99f9fd239b24275b3f0acb1f9/"
+                ]           
+               },
+               {
                 id: 3,
                 title: "Потомки солнца (Серия 1)",
                 year: "2016",
                 country: "Южная Корея",
                 emoji: "🪖",
-                videoUrl: "https://rutube.ru/video/d410f2c9c4fb21e84f7499ec539251d7/"
+                episodes: [ "https://rutube.ru/video/d410f2c9c4fb21e84f7499ec539251d7/"
+                 ]          
             }
         ];
 
@@ -81,7 +87,7 @@
                 return;
             }
             list.forEach(function(drama) {
-                var html = '<div class="card" onclick="openPlayer(\'' + drama.videoUrl + '\')">' +
+               var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';  +
                            '<div class="poster-placeholder">' + drama.emoji + '</div>' +
                            '<div class="card-info">' +
                            '<div class="card-title">' + drama.title + '</div>' +
