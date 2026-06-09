@@ -277,152 +277,21 @@ let currentEpisodeIndex = 0;
 let selectedCountry = 'Все';
 let selectedGenre = 'Все';// Переменная теперь живет на своей отдельной строчке
 
-// Функция открытия плеера и автоматического создания кнопок серий
 function openPlayer(dramaId) {
-    // Ищем дораму в массиве, чтобы убедиться, что она существует
     const drama = dramas.find(function(d) { return d.id === dramaId; });
     if (!drama) return;
 
-    // Подставляем авто-плеер Shikimori по ID дорамы
     const playerIframe = document.getElementById('videoPlayer');
     playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
 
-    // Просто открываем модальное окно с плеером
-    document.getElementById('playerModal').style.display = 'flex';
-}
-
-        currentDramaEpisodes.forEach(function(url, index) {
-            const btn = document.createElement('button');
-            btn.innerText = 'Серия ' + (index + 1);
-            
-            // Уникальный ключ для этой конкретной серии этой дорамы
-            var episodeKey = 'watched_' + dramaId + '_' + index;
-            
-            // Если в памяти браузера есть отметка, что серия посмотрена — красим её
-            if (localStorage.getItem(episodeKey) === 'true') {
-                btn.classList.add('watched');
-                btn.innerText += ' ✓'; // Добавим красивую галочку
-            }
-
-            btn.onclick = function() {
-                // Передаем и ID дорамы, и номер серии, чтобы запомнить клик
-                changeEpisode(url, dramaId, index, btn);
-            };
-            buttonsContainer.appendChild(btn);
-        });
-
-    // Включаем сразу первую серию при открытии плеера
-    var firstBtn = buttonsContainer ? buttonsContainer.querySelector('button') : null;
-    changeEpisode(currentDramaEpisodes[0], dramaId, 0, firstBtn);
-    
-    // Открываем само модальное окно
-    document.getElementById('playerModal').style.display = 'flex';
-
-// Функция подмены ссылки для корректного отображения Rutube во фрейме
-function changeEpisode(url, dramaId, episodeIndex, buttonElement) {
-    if (episodeIndex !== undefined) currentEpisodeIndex = episodeIndex; // <-- ДОБАВИТЬ ЭТУ СТРОЧКУ
-    
-    var iframe = document.getElementById('videoPlayer');
-    if (!iframe) return;
-    // ... весь остальной ваш код функции без изменений ...
-
-    let finalUrl = url;
-    if (url.includes('rutube.ru/video/')) {
-        finalUrl = url.replace('rutube.ru/video/', 'rutube.ru/play/embed/');
-    }
-    iframe.src = finalUrl;
-
-    // Запоминаем в память браузера, что эта серия просмотрена
-    if (dramaId !== undefined && episodeIndex !== undefined) {
-        var episodeKey = 'watched_' + dramaId + '_' + episodeIndex;
-        localStorage.setItem(episodeKey, 'true');
-        
-        // Сразу красим кнопку прямо на глазах у пользователя
-        if (buttonElement && !buttonElement.classList.contains('watched')) {
-            buttonElement.classList.add('watched');
-            buttonElement.innerText += ' ✓';
-        }
-    }
-}
-
-// Функция закрытия плеера и очистки ресурсов
-function closePlayer() {
-    document.getElementById('playerModal').style.display = 'none';
-    document.getElementById('videoPlayer').src = '';
-    const buttonsContainer = document.getElementById('episodeButtons');
-    if (buttonsContainer) {
-        buttonsContainer.innerHTML = '';
-    }
-}
-    function navigateEpisode(direction) {
-    let newIndex = currentEpisodeIndex + direction;
-    
-    // Проверяем, что серия существует (не уходим меньше 0 и больше доступных серий)
-    if (newIndex >= 0 && newIndex < currentDramaEpisodes.length) {
-        const buttonsContainer = document.getElementById('episodeButtons');
-        const buttons = buttonsContainer ? buttonsContainer.querySelectorAll('button') : [];
-        
-        // Переключаем серию и передаем кнопку для покраски в серый
-        changeEpisode(currentDramaEpisodes[newIndex], undefined, newIndex, buttons[newIndex]);
-    }
-}  
-
-function openPlayer(dramaId) {
-    // Находим дораму в массиве
-    const drama = dramas.find(function(d) { return d.id === dramaId; });
-    if (!drama) return;
-
-    // Автоматически подключаем плеер Shikimori
-    const playerIframe = document.getElementById('videoPlayer');
-    playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
-
-    // Показываем окно плеера
     document.getElementById('playerModal').style.display = 'flex';
 }
 
 function closePlayer() {
-    // Закрываем окно и сбрасываем ссылку плеера
     document.getElementById('playerModal').style.display = 'none';
     document.getElementById('videoPlayer').src = '';
 }
-
-function loadDramasFromAPI() {
-    // Ссылка строго с нижним подчеркиванием live_action, без пробелов!
-    const apiUrl = 'https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity';
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            dramas = data.map(item => {
-                let detectedCountry = 'Южная Корея';
-                const nameLower = item.name ? item.name.toLowerCase() : '';
-                if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
-                    detectedCountry = 'Япония';
-                } else if (nameLower.includes('china') || nameLower.includes('chinese')) {
-                    detectedCountry = 'Китай';
-                }
-
-                // Стабильная картинка, если у тайтла на Shikimori нет постера
-                let posterUrl = 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=225&auto=format&fit=crop';
-                if (item.image && item.image.original) {
-                    posterUrl = 'https://shikimori.one' + item.image.original;
-                }
-
-                return {
-                    id: item.id,
-                    title: item.russian  ||  item.name  ||  'Без названия',
-                    year: item.aired_on ? item.aired_on.split('-')[0] : '2026',
-                    country: detectedCountry,
-                    genre: 'Романтика',
-                    poster: posterUrl
-                };
-            });
-
-            renderDramas(dramas);
-        })
-        .catch(error => {
-            console.error('Ошибка при загрузке:', error);
-        });
-}
+    
 
 // Запуск автоматического скачивания дорам
 loadDramasFromAPI();
