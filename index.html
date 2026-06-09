@@ -368,34 +368,32 @@ function closePlayer() {
 }  
 
 function openPlayer(dramaId) {
-    // Ищем дораму в массиве, чтобы убедиться, что она существует
+    // Находим дораму в массиве
     const drama = dramas.find(function(d) { return d.id === dramaId; });
     if (!drama) return;
 
-    // Подставляем авто-плеер Shikimori по ID дорамы
+    // Автоматически подключаем плеер Shikimori
     const playerIframe = document.getElementById('videoPlayer');
     playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
 
-    // Открываем модальное окно с плеером
+    // Показываем окно плеера
     document.getElementById('playerModal').style.display = 'flex';
 }
 
 function closePlayer() {
-    // Закрываем плеер и очищаем ссылку, чтобы видео не пело на фоне
+    // Закрываем окно и сбрасываем ссылку плеера
     document.getElementById('playerModal').style.display = 'none';
-    const playerIframe = document.getElementById('videoPlayer');
-    playerIframe.src = '';
+    document.getElementById('videoPlayer').src = '';
 }
 
 function loadDramasFromAPI() {
-    // Запрос к базе данных Shikimori на популярные дорамы (live_action) без пробелов в ссылке
+    // Ссылка строго с нижним подчеркиванием live_action, без пробелов!
     const apiUrl = 'https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity';
 
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
             dramas = data.map(item => {
-                // Автоматически распределяем страны по ключевым словам в названии
                 let detectedCountry = 'Южная Корея';
                 const nameLower = item.name ? item.name.toLowerCase() : '';
                 if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
@@ -404,7 +402,7 @@ function loadDramasFromAPI() {
                     detectedCountry = 'Китай';
                 }
 
-                // Безопасная загрузка постеров с проверкой их существования
+                // Стабильная картинка, если у тайтла на Shikimori нет постера
                 let posterUrl = 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=225&auto=format&fit=crop';
                 if (item.image && item.image.original) {
                     posterUrl = 'https://shikimori.one' + item.image.original;
@@ -420,15 +418,14 @@ function loadDramasFromAPI() {
                 };
             });
 
-            // Отрисовываем полученные дорамы на главной странице
             renderDramas(dramas);
         })
         .catch(error => {
-            console.error('Ошибка при скачивании базы дорам:', error);
+            console.error('Ошибка при загрузке:', error);
         });
 }
 
-// Автоматический запуск скачивания при открытии сайта
+// Запуск автоматического скачивания дорам
 loadDramasFromAPI();
 
 </script>
