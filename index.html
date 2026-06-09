@@ -115,7 +115,7 @@ let currentDramaEpisodes = [];
 
 function openPlayer(dramaId) {
     const drama = dramas.find(function(d) { return d.id === dramaId; });
-    if (!drama  !drama.episodes  drama.episodes.length === 0) return;
+    if (drama  drama.episodes  drama.episodes.length === 0) return;
 
     currentDramaEpisodes = drama.episodes;
     
