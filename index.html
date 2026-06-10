@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script src="dramas-data.js"></script>
     <link rel="icon" href="data:,">
     <title>aDrama Local — Смотреть дорамы онлайн</title>
     <meta name="description" content="Онлайн-кинотеатр aDrama Local. У нас можно удобно смотреть любикие корейские дорамы с переключением серий.">
@@ -128,38 +129,15 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    var catalog = document.getElementById('catalog');
-    if (!catalog) return;
-
-    // Стираем надпись "Ничего не найдено" и очищаем каталог
-    catalog.innerHTML = ''; 
-
-    // Стилизуем контейнер каталога, чтобы фрейм встал идеально на всю ширину
-    catalog.style.display = 'block';
-    catalog.style.width = '100%';
-    catalog.style.minHeight = '600px';
-
-    // Создаем iframe, который запрашивает авто-обновляемую ленту сериалов
-    var iframeWidget = document.createElement('iframe');
-    
-    // Используем открытый агрегатор-базу новинок (безопасный для CORS)
-    iframeWidget.src = "https://vidsrc.cc/v2/embed/tv/popular"; 
-    
-    // Настройки внешнего вида фрейма, чтобы он сливался с твоим сайтом
-    iframeWidget.style.width = "100%";
-    iframeWidget.style.height = "700px";
-    iframeWidget.style.border = "none";
-    iframeWidget.style.borderRadius = "8px";
-    iframeWidget.style.backgroundColor = "#111";
-    iframeWidget.style.boxShadow = "0px 4px 20px rgba(0,0,0,0.5)";
-    
-    // Разрешаем разворачивать плеер на весь экран
-    iframeWidget.setAttribute('allowfullscreen', 'true');
-
-    // Вставляем авто-ленту прямо на страницу сайта
-    catalog.appendChild(iframeWidget);
-
-    console.log("Автоматическая лента успешно загружена в обход CORS!");
+    // Если робот уже скачал данные, берем их, иначе включаем быстрый резерв
+    if (window.remoteDramas && window.remoteDramas.length > 0) {
+        window.dramas = window.remoteDramas;
+    } else {
+        window.dramas = [
+            { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/50796.jpg" }
+        ];
+    }
+    applyDoubleFilter();
 }
 // 3. Функция живого текстового поиска
 function searchDrama() {
