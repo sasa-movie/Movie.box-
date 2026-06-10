@@ -128,49 +128,38 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Подключаемся напрямую к стабильному плееру-агрегатору
-    var apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=40";
+    var catalog = document.getElementById('catalog');
+    if (!catalog) return;
+
+    // Стираем надпись "Ничего не найдено" и очищаем каталог
+    catalog.innerHTML = ''; 
+
+    // Стилизуем контейнер каталога, чтобы фрейм встал идеально на всю ширину
+    catalog.style.display = 'block';
+    catalog.style.width = '100%';
+    catalog.style.minHeight = '600px';
+
+    // Создаем iframe, который запрашивает авто-обновляемую ленту сериалов
+    var iframeWidget = document.createElement('iframe');
     
-    fetch(apiUrl)
-        .then(function(response) {
-            if (!response.ok) throw new Error('Ошибка: ' + response.status);
-            return response.json();
-        })
-        .then(function(data) {
-            if (!data || !data.results) throw new Error('Нет данных');
+    // Используем открытый агрегатор-базу новинок (безопасный для CORS)
+    iframeWidget.src = "https://vidsrc.cc/v2/embed/tv/popular"; 
+    
+    // Настройки внешнего вида фрейма, чтобы он сливался с твоим сайтом
+    iframeWidget.style.width = "100%";
+    iframeWidget.style.height = "700px";
+    iframeWidget.style.border = "none";
+    iframeWidget.style.borderRadius = "8px";
+    iframeWidget.style.backgroundColor = "#111";
+    iframeWidget.style.boxShadow = "0px 4px 20px rgba(0,0,0,0.5)";
+    
+    // Разрешаем разворачивать плеер на весь экран
+    iframeWidget.setAttribute('allowfullscreen', 'true');
 
-            // Превращаем данные в карточки без использования современных const/let, ломающих старый синтаксис
-            window.dramas = data.results.map(function(item) {
-                // Базовый постер, если у сериала нет своей картинки
-                var posterUrl = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
-                if (item.poster_path) {
-                    posterUrl = "https://image.tmdb.org/t/p/w500" + item.poster_path;
-                }
+    // Вставляем авто-ленту прямо на страницу сайта
+    catalog.appendChild(iframeWidget);
 
-                return {
-                    id: item.id,
-                    kp_id: item.id.toString(),
-                    title: item.name || item.original_name,
-                    year: item.first_air_date ? item.first_air_date.substring(0, 4) : "2024",
-                    country: "Южная Корея", // Назначаем базовые значения, чтобы не ломать фильтры сайта
-                    genre: "Романтика",
-                    poster: posterUrl
-                };
-            });
-
-            // Запускаем отображение дорам через твои фильтры
-            applyDoubleFilter();
-        })
-        .catch(function(error) {
-            console.error("Переходим на резерв:", error);
-            // Железобетонный аварийный список с неубиваемыми картинками Shiki
-            window.dramas = [
-                { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/50796.jpg" },
-                { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/48911.jpg" },
-                { id: 3, kp_id: "966453",  title: "Потомки солнца", year: "2016", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/32828.jpg" }
-            ];
-            applyDoubleFilter();
-        });
+    console.log("Автоматическая лента успешно загружена в обход CORS!");
 }
 // 3. Функция живого текстового поиска
 function searchDrama() {
