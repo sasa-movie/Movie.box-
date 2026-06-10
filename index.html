@@ -127,10 +127,10 @@ function renderDramas(list) {
     catalog.innerHTML = html;
 }
 
-// 2. Функция загрузки реальных дорам (Исправленная ссылка .json + встроенная база)
 function loadDramasFromAPI() {
-    // Точный и проверенный адрес JSON-файла
-    const apiUrl = "https://raw.githubusercontent.com/chvanyunin/ko-dramas-json/main/dramas.json";
+    // Делаем запрос к бесплатной базе: выбираем только сериалы (show) из стран Корея, Китай, Япония
+    // Сортируем по популярности (kinopoisk_rating)
+    const apiUrl = "https://kinobox.tv/api/films/search?country=Южная Корея,Китай,Япония&type=show&limit=50";
     
     fetch(apiUrl)
         .then(response => {
@@ -138,37 +138,38 @@ function loadDramasFromAPI() {
             return response.json();
         })
         .then(data => {
-            window.dramas = data.map(function(item) {
+            // Превращаем полученный массив фильмов в удобный формат для твоего сайта
+            window.dramas = data.content.map(function(item) {
+                // Пытаемся определить главный жанр дорамы для твоих кнопок
+                let mainGenre = "Романтика"; // по умолчанию
+                if (item.genres && item.genres.length > 0) {
+                    const g = item.genres[0].name.toLowerCase();
+                    if (g.includes("фэнтези") || g.includes("фантастика")) mainGenre = "Фэнтези";
+                    if (g.includes("боевик")  g.includes("криминал")  g.includes("детектив")) mainGenre = "Экшен";
+                }
+
                 return {
                     id: item.id,
-                    title: item.title,
-                    year: item.year,
-                    country: item.country, 
-                    genre: item.genre,     
-                    poster: item.poster
+                    kp_id: item.kinopoiskId || item.id, // ID Кинопоиска для плеера
+                    title: item.titleRu || item.titleEn,
+                    year: item.year ? item.year.toString() : '????',
+                    country: item.countries && item.countries[0] ? item.countries[0].name : 'Южная Корея',
+                    genre: mainGenre,
+                    poster: item.posterUrl || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500"
                 };
             });
+
+            // Запускаем кнопки фильтров
             applyDoubleFilter();
         })
         .catch(error => {
-            console.error("Переходим на локальную базу дорам:", error);
-            
-            // Наша железобетонная база, которая идеально подходит под твои кнопки!
-            function loadDramasFromAPI() {
-    window.dramas = [
-        { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/4649635.jpg" },
-        { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1411135.jpg" },
-        { id: 3, kp_id: "966453",  title: "Потомки солнца", year: "2016", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/966453.jpg" },
-        { id: 4, kp_id: "5034177", title: "Слабый герой", year: "2022", country: "Южная Корея", genre: "Экшен", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/5034177.jpg" },
-        { id: 5, kp_id: "1446135", title: "Винченцо", year: "2021", country: "Южная Корея", genre: "Экшен", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1446135.jpg" },
-        { id: 6, kp_id: "1000004", title: "Гоблин (Токкэби)", year: "2016", country: "Южная Корея", genre: "Фэнтези", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1000004.jpg" },
-        { id: 7, kp_id: "5103445", title: "Разлука Орхидеи и Повелителя демонов", year: "2022", country: "Китай", genre: "Фэнтези", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/5103445.jpg" },
-        { id: 8, kp_id: "5005831", title: "Любовь во время звездопада", year: "2023", country: "Китай", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/5005831.jpg" },
-        { id: 9, kp_id: "1337199", title: "Алиса в Пограничье", year: "2020", country: "Япония", genre: "Экшен", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1337199.jpg" }
-    ];
-    
-    // Передаем данные на фильтрацию кнопок
-    applyDoubleFilter();
+            console.error("Ошибка автозагрузки, включаем резерв:", error);
+            // Аварийный список на случай, если у пользователя пропал интернет
+            window.dramas = [
+                { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/4649635.jpg" },
+                { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1411135.jpg" }
+            ];
+            applyDoubleFilter();
         });
 }
 // 3. Функция живого текстового поиска
@@ -228,7 +229,7 @@ function openPlayer(kpId, title) {
         modal.style.left = '0';
         modal.style.width = '100%';
         modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0,0,0,0.9)';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.95)';
         modal.style.zIndex = '10000';
         modal.style.display = 'flex';
         modal.style.flexDirection = 'column';
@@ -243,7 +244,7 @@ function openPlayer(kpId, title) {
             <button onclick="document.getElementById('player-modal').remove()" style="background: #e50914; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; font-family: sans-serif;">Закрыть</button>
         </div>
         <div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; background: #000; border: 2px solid #333; border-radius: 8px; overflow: hidden;">
-            <iframe src="https://vidsrc.cc/v2/embed/tv/${kpId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+            <iframe src="https://kinobox.tv/api/players?kp=${kpId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
         </div>
     ;
 }
