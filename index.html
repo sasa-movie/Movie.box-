@@ -125,8 +125,8 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Используем проверенную ссылку: запрашиваем тип live_action через правильный синтаксис
-    const apiUrl = "https://shikimori.one/api/animes?limit=50&mylist=live_action";
+    // Делаем текстовый поисковый запрос к Shikimori по слову dorama
+    const apiUrl = "https://shikimori.one/api/animes?search=dorama&limit=50";
     
     fetch(apiUrl)
         .then(response => {
@@ -134,13 +134,13 @@ function loadDramasFromAPI() {
             return response.json();
         })
         .then(data => {
-            // Перезаписываем глобальный массив dramas полученными дорамами
+            // Превращаем полученные дорамы в карточки для твоего сайта
             window.dramas = data.map(function(item) {
                 return {
                     id: item.id,
                     title: item.russian || item.name,
                     year: item.aired_on ? item.aired_on.split('-')[0] : '????',
-                    country: 'Южная Корея', // Задаем базовую страну для работы твоих фильтров
+                    country: 'Южная Корея', // Задаем базу для работы кнопок фильтрации
                     poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=2256'
                 };
             });
