@@ -1,26 +1,24 @@
 const fs = require('fs');
 
-// Подключаемся к базе за популярными сериалами (она отдает данные без CORS блокировок на уровне сервера)
 const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=60";
 
-console.log("Запуск автоматического обновления каталога дорам...");
+console.log("Запуск обновления базы дорам...");
 
 fetch(apiUrl)
     .then(res => {
-        if (!res.ok) throw new Error('Ошибка сервера базы данных: ' + res.status);
+        if (!res.ok) throw new Error('Ошибка сети: ' + res.status);
         return res.json();
     })
     .then(data => {
-        if (!data || !data.results) throw new Error('База вернула пустой ответ');
+        if (!data || !data.results) throw new Error('Пустая база данных');
 
-        // Отфильтруем только азиатский контент (Корея, Китай, Япония)
+        // Фильтруем только Азию
         const asianShows = data.results.filter(item => {
             if (!item.origin_country) return false;
             const code = item.origin_country[0];
             return code === 'KR'  code === 'CN'  code === 'JP';
         });
 
-        // Форматируем данные в массив для твоего сайта
         const newDramas = asianShows.map((item, index) => {
             let country = "Южная Корея";
             if (item.origin_country[0] === 'CN') country = "Китай";
@@ -42,65 +40,20 @@ fetch(apiUrl)
                 id: index + 1,
                 kp_id: item.id.toString(),
                 title: item.name || item.original_name,
-                year: item.first_air_date ? item.first_air_date.substring(0, 4) : "2025",
+                year: item.first_air_date ? item.first_air_date.substring(0, 4) : "2026",
                 country: country,
                 genre: genre,
                 poster: poster
             };
         });
 
-        if (newDramas.length === 0) {
-            console.log("Новых дорам в трендах сейчас нет. Пропускаем обновление.");
-            process.exit(0);
-        }
-
-        // Читаем текущий файл index.html
-        let htmlContent = fs.readFileSync('index.html', 'utf8');
-
-        // Ищем твою старую ручную функцию loadDramasFromAPI
-        // И полностью заменяем её внутренности на новый массив, который мы скачали!
-        const functionStartPattern = "function loadDramasFromAPI() {";
-        const startIdx = htmlContent.indexOf(functionStartPattern);
-
-        if (startIdx === -1) {
-            throw new Error("Не удалось найти функцию loadDramasFromAPI в вашем index.html. Проверьте её наличие.");
-        }
-
-        // Генерируем новый текст для этой функции
-        const updatedFunctionText = function loadDramasFromAPI() {
-    window.dramas = ${JSON.stringify(newDramas, null, 4)};
-    applyDoubleFilter();
-};
-
-        // Находим, где функция заканчивается (ищем следующую закрывающую фигурную скобку)
-        // Для безопасности мы просто заменим старый кусок кода до следующего логического блока.
-        // Чтобы всё прошло гладко, мы перепишем функцию до её закрытия.
-        // Предполагаем, что старая функция заканчивается закрытием скобки. 
-        // Мы найдем старую функцию и заменим её целиком с помощью регулярного выражения.
+        // Просто сохраняем готовый массив в отдельный файл, не трогая index.html!
+        const fileContent = window.remoteDramas = ${JSON.stringify(newDramas, null, 4)};;
+        fs.writeFileSync('dramas-data.js', fileContent, 'utf8');
         
-        const regex = /function loadDramasFromAPI\(\s*\)[\s\S]*?\}\s*\/\/ конец loadDramasFromAPI|function loadDramasFromAPI\(\s*\)[\s\S]*?applyDoubleFilter\(\);\s*\}/;
-        
-        if (regex.test(htmlContent)) {
-            htmlContent = htmlContent.replace(regex, updatedFunctionText);
-        } else {
-            // Если точное совпадение не найдено, заменим старую функцию грубым, но рабочим методом подмены строки
-      const endIdx = htmlContent.indexOf("applyDoubleFilter();", startIdx);
-            if (endIdx !== -1) {
-                const closeBraceIdx = htmlContent.indexOf("}", endIdx);
-                const part1 = htmlContent.substring(0, startIdx);
-                const part2 = htmlContent.substring(closeBraceIdx + 1);
-                htmlContent = part1 + updatedFunctionText + part2;
-            } else {
-                throw new Error("Не удалось автоматически переписать структуру index.html");
-            }
-        }
-
-        // Записываем обновленный index.html обратно на диск
-        fs.writeFileSync('index.html', 'htmlContent', 'utf8');
-        fs.writeFileSync('index.html', htmlContent, 'utf8');
-        console.log(Успешно добавлено ${newDramas.length} автоматических дорам в index.html!);
+        console.log(Успешно сохранено ${newDramas.length} дорам в файл dramas-data.js!);
     })
     .catch(err => {
-        console.error("Критическая ошибка работы робота:", err);
+        console.error("Ошибка:", err);
         process.exit(1);
     });
