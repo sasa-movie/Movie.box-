@@ -125,8 +125,8 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Чистый запрос без лишних параметров, чтобы сервер не ругался 422
-    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50";
+    // Делаем чистый запрос без параметров, которые вызывают ошибку 422
+    const apiUrl = "https://shikimori.one/api/animes?limit=100&order=popularity";
     
     fetch(apiUrl)
         .then(response => {
@@ -134,18 +134,24 @@ function loadDramasFromAPI() {
             return response.json();
         })
         .then(data => {
-            // Записываем дорамы прямо в глобальное окно браузера, стирая любое старое аниме
-            window.dramas = data.map(item => {
+            // ВАЖНО: Фильтруем данные вручную. 
+            // Оставляем ТОЛЬКО дорамы (у них на Шикимори тип равен 'live_action')
+            const filteredDramas = data.filter(function(item) {
+                return item.kind === 'live_action';
+            });
+
+            // Превращаем полученные дорамы в карточки для твоего сайта
+            window.dramas = filteredDramas.map(function(item) {
                 return {
                     id: item.id,
                     title: item.russian || item.name,
                     year: item.aired_on ? item.aired_on.split('-')[0] : '????',
-                    country: 'Южная Корея', // API Шикимори по жанру 33 выдает дорамы
+                    country: 'Южная Корея', // Принудительно ставим для фильтра кнопок
                     poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=2256'
                 };
             });
 
-            // Сразу же принудительно вызываем фильтр и отрисовку
+            // Исправлено: вызываем двойной фильтр с маленькой буквы, чтобы обновить экран
             applyDoubleFilter();
         })
         .catch(error => {
@@ -187,9 +193,11 @@ function filterGenre(genreName) {
 }
 
 function applyDoubleFilter() {
+    // Безопасно берем скачанный window.dramas. Если он еще не скачался — берем пустой массив.
     const currentList = window.dramas || [];
     const filtered = currentList.filter(function(drama) {
         const matchCountry = (selectedCountry === 'Все' || drama.country === selectedCountry);
+        // ... твой дальнейший код фильтрации по жанрам остается без изменений ...
         const matchGenre = (selectedGenre === 'Все' || drama.genre === selectedGenre);
         return matchCountry && matchGenre;
     });
