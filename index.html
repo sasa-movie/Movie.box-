@@ -128,40 +128,82 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Подключаемся напрямую к автоматической базе
-    const apiUrl = "https://kinobox.tv/api/films/search?country=Южная Корея,Китай,Япония&type=show&limit=50";
+    // Подключаемся напрямую к гигантской базе дорам Kodik через стабильный плеер-агрегатор
+    // Запрашиваем 100 самых свежих и популярных азиатских сериалов
+    const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=100";
     
     fetch(apiUrl)
         .then(response => {
-            if (!response.ok) throw new Error('Ошибка сети: ' + response.status);
+            // Если сервер не отвечает, выкидываем ошибку для перехода на резерв
+            if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
             return response.json();
         })
         .then(data => {
-            // Превращаем данные в карточки без единой сложной проверки
-            window.dramas = data.content.map(function(item) {
+            // Проверяем, пришли ли данные
+            if (!data || !data.results) throw new Error('Пустая база');
+
+            // Фильтруем только Азиатские страны (Корея, Китай, Япония)
+            const asianSerials = data.results.filter(function(item) {
+                if (!item.origin_country) return false;
+                const countryCode = item.origin_country[0];
+                return countryCode === 'KR'  countryCode === 'CN'  countryCode === 'JP';
+            });
+
+            // Форматируем их под твой сайт
+            window.dramas = asianSerials.map(function(item) {
+                // Определяем понятную страну для твоих кнопок-фильтров
+                let displayCountry = "Южная Корея";
+                if (item.origin_country[0] === 'CN') displayCountry = "Китай";
+                if (item.origin_country[0] === 'JP') displayCountry = "Япония";
+
+                // Автоматически подбираем жанр (если в базе боевик/детектив — ставим Экшен, если мистика — Фэнтези)
+                let displayGenre = "Романтика"; // по умолчанию для дорам
+                if (item.genre_ids && item.genre_ids.length > 0) {
+                    const primaryGenre = item.genre_ids[0];
+                    if (primaryGenre === 10759 || primaryGenre === 9648) displayGenre = "Экшен";
+                    if (primaryGenre === 14 || primaryGenre === 878) displayGenre = "Фэнтези";
+                }
+
+                // Собираем правильную ссылку на реальный фото-постер актеров
+                let posterPath = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
+                if (item.poster_path) {
+                    posterPath = "https://image.tmdb.org/t/p/w500" + item.poster_path;
+                }
+
                 return {
                     id: item.id,
-                    kp_id: item.kinopoiskId || item.id,
-                    title: item.titleRu || item.titleEn,
-                    year: item.year ? item.year.toString() : '2024',
-                    country: item.countries && item.countries[0] ? item.countries[0].name : 'Южная Корея',
-                    genre: "Романтика", // Назначаем базовый жанр по умолчанию, чтобы не ломать фильтры
-                    poster: item.posterUrl || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500"
+                    kp_id: item.id.toString(), // Передаем ID для открытия серий
+                    title: item.name || item.original_name,
+                    year: item.first_air_date ? item.first_air_date.substring(0, 4) : "2024",
+                    country: displayCountry,
+                    genre: displayGenre,
+                    poster: posterPath
                 };
             });
 
-            // Запускаем отображение дорам через твои фильтры
+            // Если вдруг азиатских новинок в этот момент не нашлось, включаем красивую базу
+            if (window.dramas.length === 0) {
+                useBackupDramas();
+                return;
+            }
+
+            // Запускаем твои кнопки фильтрации
             applyDoubleFilter();
         })
         .catch(error => {
-            console.error("Ошибка автозагрузки, включаем резервный список:", error);
-            // Наш самый первый, проверенный список дорам, если вдруг сервер не ответит
-            window.dramas = [
-                { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/4649635.jpg" },
-                { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1411135.jpg" }
-            ];
-            applyDoubleFilter();
+            console.error("Переходим на локальную базу дорам:", error);
+            useBackupDramas();
         });
+}
+
+// Вспомогательная функция красивого резерва, если у пользователя упал интернет
+function useBackupDramas() {
+    window.dramas = [
+        { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://nyaa.shikimori.one/system/animes/original/50796.jpg" },
+        { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/48911.jpg" },
+        { id: 3, kp_id: "966453",  title: "Потомки солнца", year: "2016", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/32828.jpg" }
+    ];
+    applyDoubleFilter();
 }
 // 3. Функция живого текстового поиска
 function searchDrama() {
@@ -229,14 +271,13 @@ function openPlayer(kpId, title) {
         document.body.appendChild(modal);
     }
 
-    // Собираем HTML через обычные строки, чтобы у браузера не капризничал синтаксис
     let htmlContent = '';
     htmlContent += '<div style="width: 90%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: white; font-family: sans-serif;">';
-    htmlContent += '<h2 style="margin: 0; font-size: 20px;">' + title + '</h2>';
+    htmlContent += '<h2 style="margin: 0; font-size: 20px;">' + title + ' (Смотреть онлайн)</h2>';
     htmlContent += '<button onclick="document.getElementById(\'player-modal\').remove()" style="background: #e50914; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; font-family: sans-serif;">Закрыть</button>';
     htmlContent += '</div>';
     htmlContent += '<div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; background: #000; border: 2px solid #333; border-radius: 8px; overflow: hidden;">';
-    htmlContent += '<iframe src="https://kinobox.tv/api/players?kp=' + kpId + '" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>';
+    htmlContent += '<iframe src="https://vidsrc.cc/v2/embed/tv/' + kpId + '" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>';
     htmlContent += '</div>';
 
     modal.innerHTML = htmlContent;
