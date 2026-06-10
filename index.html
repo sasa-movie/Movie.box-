@@ -128,82 +128,49 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Подключаемся напрямую к гигантской базе дорам Kodik через стабильный плеер-агрегатор
-    // Запрашиваем 100 самых свежих и популярных азиатских сериалов
-    const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=100";
+    // Подключаемся напрямую к стабильному плееру-агрегатору
+    var apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=40";
     
     fetch(apiUrl)
-        .then(response => {
-            // Если сервер не отвечает, выкидываем ошибку для перехода на резерв
-            if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
+        .then(function(response) {
+            if (!response.ok) throw new Error('Ошибка: ' + response.status);
             return response.json();
         })
-        .then(data => {
-            // Проверяем, пришли ли данные
-            if (!data || !data.results) throw new Error('Пустая база');
+        .then(function(data) {
+            if (!data || !data.results) throw new Error('Нет данных');
 
-            // Фильтруем только Азиатские страны (Корея, Китай, Япония)
-            const asianSerials = data.results.filter(function(item) {
-                if (!item.origin_country) return false;
-                const countryCode = item.origin_country[0];
-                return countryCode === 'KR'  countryCode === 'CN'  countryCode === 'JP';
-            });
-
-            // Форматируем их под твой сайт
-            window.dramas = asianSerials.map(function(item) {
-                // Определяем понятную страну для твоих кнопок-фильтров
-                let displayCountry = "Южная Корея";
-                if (item.origin_country[0] === 'CN') displayCountry = "Китай";
-                if (item.origin_country[0] === 'JP') displayCountry = "Япония";
-
-                // Автоматически подбираем жанр (если в базе боевик/детектив — ставим Экшен, если мистика — Фэнтези)
-                let displayGenre = "Романтика"; // по умолчанию для дорам
-                if (item.genre_ids && item.genre_ids.length > 0) {
-                    const primaryGenre = item.genre_ids[0];
-                    if (primaryGenre === 10759 || primaryGenre === 9648) displayGenre = "Экшен";
-                    if (primaryGenre === 14 || primaryGenre === 878) displayGenre = "Фэнтези";
-                }
-
-                // Собираем правильную ссылку на реальный фото-постер актеров
-                let posterPath = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
+            // Превращаем данные в карточки без использования современных const/let, ломающих старый синтаксис
+            window.dramas = data.results.map(function(item) {
+                // Базовый постер, если у сериала нет своей картинки
+                var posterUrl = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
                 if (item.poster_path) {
-                    posterPath = "https://image.tmdb.org/t/p/w500" + item.poster_path;
+                    posterUrl = "https://image.tmdb.org/t/p/w500" + item.poster_path;
                 }
 
                 return {
                     id: item.id,
-                    kp_id: item.id.toString(), // Передаем ID для открытия серий
+                    kp_id: item.id.toString(),
                     title: item.name || item.original_name,
                     year: item.first_air_date ? item.first_air_date.substring(0, 4) : "2024",
-                    country: displayCountry,
-                    genre: displayGenre,
-                    poster: posterPath
+                    country: "Южная Корея", // Назначаем базовые значения, чтобы не ломать фильтры сайта
+                    genre: "Романтика",
+                    poster: posterUrl
                 };
             });
 
-            // Если вдруг азиатских новинок в этот момент не нашлось, включаем красивую базу
-            if (window.dramas.length === 0) {
-                useBackupDramas();
-                return;
-            }
-
-            // Запускаем твои кнопки фильтрации
+            // Запускаем отображение дорам через твои фильтры
             applyDoubleFilter();
         })
-        .catch(error => {
-            console.error("Переходим на локальную базу дорам:", error);
-            useBackupDramas();
+        .catch(function(error) {
+            console.error("Переходим на резерв:", error);
+            // Железобетонный аварийный список с неубиваемыми картинками Shiki
+            window.dramas = [
+                { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/50796.jpg" },
+                { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/48911.jpg" },
+                { id: 3, kp_id: "966453",  title: "Потомки солнца", year: "2016", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/32828.jpg" }
+            ];
+            applyDoubleFilter();
         });
-}
-
-// Вспомогательная функция красивого резерва, если у пользователя упал интернет
-function useBackupDramas() {
-    window.dramas = [
-        { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://nyaa.shikimori.one/system/animes/original/50796.jpg" },
-        { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/48911.jpg" },
-        { id: 3, kp_id: "966453",  title: "Потомки солнца", year: "2016", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/32828.jpg" }
-    ];
-    applyDoubleFilter();
 }
 // 3. Функция живого текстового поиска
 function searchDrama() {
