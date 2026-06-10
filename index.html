@@ -126,7 +126,7 @@ function renderDramas(list) {
 // 2. Функция скачивания актуальной базы КОРЕЙСКИХ ДОРАМ с сервера Shikimori
 function loadDramasFromAPI() {
     // Делаем правильный запрос: жанр 33 (дорама), тип live_action (с актерами)
-    const apiUrl = "https://shikimori.one/api/dramas?genre=33&limit=50&order=popularity";
+    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
     
     fetch(apiUrl)
         .then(response => response.json())
