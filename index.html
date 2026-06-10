@@ -182,7 +182,7 @@ function loadDramasFromAPI() {
         dramas.forEach(drama => {
     // 1. Добавляем onclick и передаем туда ID (используем косые кавычки   для удобства)
     // Замени 'openDrama' на точное название твоей функции открытия, если оно другое!
-    let html = <div class="card" onclick="openDrama(${drama.id})">; 
+    let html = '<div class="card" onclick="openDrama(' + drama.id + ')">'; 
     
     html += '<div class="card-title">' + drama.title + '</div>';
     html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
