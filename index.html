@@ -126,6 +126,7 @@ function renderDramas(list) {
 // 2. Функция скачивания актуальной базы дорам с сервера Shikimori
 function loadDramasFromAPI() {
     const apiUrl = "https://shikimori.one/api/animes?kind=live_action&limit=50&order=popularity";
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
             dramas = data.map(item => {
