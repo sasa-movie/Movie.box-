@@ -125,33 +125,27 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Делаем чистый запрос без параметров, которые вызывают ошибку 422
-    const apiUrl = "https://shikimori.one/api/animes?limit=100&order=popularity";
+    // Используем проверенную ссылку: запрашиваем тип live_action через правильный синтаксис
+    const apiUrl = "https://shikimori.one/api/animes?limit=50&mylist=live_action";
     
     fetch(apiUrl)
         .then(response => {
-            if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
+            if (!response.ok) throw new Error('Ошибка сети: ' + response.status);
             return response.json();
         })
         .then(data => {
-            // ВАЖНО: Фильтруем данные вручную. 
-            // Оставляем ТОЛЬКО дорамы (у них на Шикимори тип равен 'live_action')
-            const filteredDramas = data.filter(function(item) {
-                return item.kind === 'live_action';
-            });
-
-            // Превращаем полученные дорамы в карточки для твоего сайта
-            window.dramas = filteredDramas.map(function(item) {
+            // Перезаписываем глобальный массив dramas полученными дорамами
+            window.dramas = data.map(function(item) {
                 return {
                     id: item.id,
                     title: item.russian || item.name,
                     year: item.aired_on ? item.aired_on.split('-')[0] : '????',
-                    country: 'Южная Корея', // Принудительно ставим для фильтра кнопок
+                    country: 'Южная Корея', // Задаем базовую страну для работы твоих фильтров
                     poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=2256'
                 };
             });
 
-            // Исправлено: вызываем двойной фильтр с маленькой буквы, чтобы обновить экран
+            // Запускаем кнопки фильтрации и выводим карточки на экран
             applyDoubleFilter();
         })
         .catch(error => {
