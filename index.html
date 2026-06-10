@@ -254,7 +254,8 @@ function openPlayer(dramaId) {
     if (!drama) return;
 
     const playerIframe = document.getElementById('videoPlayer');
-    playerIframe.src = 'https://kodi.click/find-player?shikimori_id=' + dramaId;
+    // Меняем только эту строку внутри функции openPlayer!
+   playerIframe.src = 'https://kodikapi.com/get-player?shikimori_id=' + dramaId;
 
     document.getElementById('playerModal').style.display = 'flex';
 }
