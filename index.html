@@ -123,86 +123,50 @@ function renderDramas(list) {
     });
 }
 
-// 2. Функция скачивания актуальной базы аниме и дорам с сервера Shikimori
+// 2. Функция скачивания актуальной базы КОРЕЙСКИХ ДОРАМ с сервера Shikimori
 function loadDramasFromAPI() {
-    // Ссылка на популярное аниме
-    const animeUrl = "https://shikimori.one/api/animes?limit=50&order=popularity";
-    // Ссылка на дорамы (жанр 33)
-    const doramaUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
-
-    // Запускаем оба запроса одновременно
-    Promise.all([
-        fetch(animeUrl).then(res => res.json()),
-        fetch(doramaUrl).then(res => res.json())
-    ])
-    .then(([animeData, doramaData]) => {
-        // Объединяем аниме и дорамы в один общий массив
-        const combinedData = [...animeData, ...doramaData];
-
-        // Перемешаем их по популярности или ID, чтобы они не шли сначала только аниме, а потом только дорамы
-        // Если хочешь оставить сначала аниме, потом дорамы — просто удали строку ниже
-        combinedData.sort((a, b) => b.id - a.id); 
-
-        // Твой оригинальный код обработки данных (начиная со строки 131)
-        dramas = combinedData.map(item => {
-            let detectedCountry = 'Южная Корея';
-            const nameLower = item.name ? item.name.toLowerCase() : '';
-            
-            if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
-                detectedCountry = 'Япония';
-            } else if (nameLower.includes('china') || nameLower.includes('chinese')) {
-                detectedCountry = 'Китай';
-            }
-
-            // Добавим проверку: если это аниме, то страна по умолчанию Япония (если не определилась Корея)
-            // Так как у Shikimori аниме в основном японские
-            if (!item.genres || !item.genres.some(g => g.id === 33)) {
-                if (detectedCountry === 'Южная Корея' && !nameLower.includes('korea')) {
-                    detectedCountry = 'Япония'; 
-                }
-            }
-
-            // Возвращаем объект (как у тебя в коде дальше)
-            return {
-                id: item.id,
-                title: item.russian || item.name,
-                year: item.aired_on ? item.aired_on.split('-')[0] : '????',
-                country: detectedCountry,
-                poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/...' // Твоя заглушка
-            };
-        });
-
-        // Здесь вызываешь функцию отрисовки интерфейса (которая у тебя идет на строках 118-122)
-        // Например: renderCatalog(); или как она у тебя называется ниже по коду.
-        // Судя по скриншоту, у тебя там идет цикл, который заполняет catalog.innerHTML
-        
-        // Очищаем каталог перед выводом
-        document.getElementById('catalog').innerHTML = ''; 
-        
-        dramas.forEach(drama => {
-    // Открываем карточку с вызовом openPlayer
-    var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';
+    // Запрашиваем из базы Shikimori видео с жанром "Дорама" (id 33)
+    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
     
-    // Добавляем постер (как в твоей функции выше)
-    html += '<img class="poster-image" src="' + drama.poster + '" alt="' + drama.title + '">';
-    
-    // Добавляем обертку для инфо
-    html += '<div class="card-info">';
-    
-    // Название, год и страна
-    html += '<div class="card-title">' + drama.title + '</div>';
-    html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
-    
-    // Закрываем внутренние дивы и саму карточку
-    html += '</div>'; // закрывает card-info
-    html += '</div>'; // закрывает саму card
-    
-    // Выводим в каталог
-    document.getElementById('catalog').innerHTML += html;
-});
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Фильтруем данные: оставляем ТОЛЬКО те, где в названии НЕТ упоминания Японии/Китая,
+            // либо те, которые явно относятся к корейской культуре, чтобы отсечь японские лайв-экшены
+            const koreanOnly = data.filter(item => {
+                const nameLower = item.name ? item.name.toLowerCase() : '';
+                // Исключаем японские и китайские маркеры, если они вдруг попали в этот жанр
+                return !nameLower.includes('japan') && !nameLower.includes('tokyo') && !nameLower.includes('china');
+            });
 
-    })
-    .catch(error => console.error("Ошибка загрузки данных:", error));
+            // Записываем отфильтрованные корейские дорамы в массив dramas
+            dramas = koreanOnly.map(item => {
+                return {
+                    id: item.id, // Обязательно сохраняем ID для плеера!
+                    title: item.russian || item.name,
+                    year: item.aired_on ? item.aired_on.split('-')[0] : '????',
+                    country: 'Южная Корея', // Раз мы отфильтровали, жестко ставим Южную Корею
+                    poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=2256'
+                };
+            });
+
+            // Очищаем каталог перед выводом карточек
+            document.getElementById('catalog').innerHTML = ''; 
+
+            // Отрисовываем карточки корейских дорам на экран
+            dramas.forEach(drama => {
+                var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';
+                html += '<img class="poster-image" src="' + drama.poster + '" alt="' + drama.title + '">';
+                html += '<div class="card-info">';
+                html += '<div class="card-title">' + drama.title + '</div>';
+                html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
+                html += '</div>'; // закрывает card-info
+                html += '</div>'; // закрывает card
+                
+                document.getElementById('catalog').innerHTML += html;
+            });
+        })
+        .catch(error => console.error("Ошибка загрузки дорам:", error));
 }
 
 // 3. Функция живого текстового поиска
@@ -255,7 +219,8 @@ function openPlayer(dramaId) {
 
     const playerIframe = document.getElementById('videoPlayer');
     // Меняем только эту строку внутри функции openPlayer!
-   playerIframe.src = 'https://kodikapi.com/get-player?shikimori_id=' + dramaId;
+   // Замени строку 251 внутри функции openPlayer на эту:
+   playerIframe.src = 'https://shikimori.me/animes/' + dramaId + '/video_online';
 
     document.getElementById('playerModal').style.display = 'flex';
 }
