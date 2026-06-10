@@ -254,7 +254,7 @@ function openPlayer(dramaId) {
     if (!drama) return;
 
     const playerIframe = document.getElementById('videoPlayer');
-    playerIframe.src = 'https://shikimori.one/animes/' + dramaId + '/video_online';
+    playerIframe.src = 'https://kodik.info/find-player?shikimori_id=' + dramaId;
 
     document.getElementById('playerModal').style.display = 'flex';
 }
