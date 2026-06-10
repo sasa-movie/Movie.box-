@@ -150,7 +150,7 @@ function loadDramasFromAPI() {
 
             // ВОТ ОН, ГЛАВНЫЙ СЕКРЕТ:
             // Передаем наш новенький массив КОРЕЙСКИХ ДОРАМ в твою функцию отрисовки!
-            RenderDramas(dramas);
+            renderDramas(dramas);
         })
         .catch(error => console.error("Ошибка загрузки дорам:", error));
 }
@@ -196,11 +196,10 @@ function applyDoubleFilter() {
     });
     renderDramas(filtered);
 }
-
+    
 function openPlayer(dramaId) {
-    // Вместо капризного iframe просто открываем просмотр в новой вкладке
-    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
-  document.getElementById('playerModal').style.display = 'flex';
+    // Открываем внешнюю страницу просмотра, не трогая скрытые стили сайта
+    window.open('https://shikimori.me/animes/' + dramaId + '/video_online', '_blank');
 }
 
 // 6. Закрытие плеера
