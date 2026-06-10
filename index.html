@@ -123,36 +123,33 @@ function renderDramas(list) {
     });
 }
 
-// 2. Функция скачивания актуальной базы КОРЕЙСКИХ ДОРАМ с сервера Shikimori
 function loadDramasFromAPI() {
-    // Делаем правильный запрос строго на /api/animes и по жанру 33 (дорама)
-    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
+    // Чистый запрос без лишних параметров, чтобы сервер не ругался 422
+    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50";
     
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
+            return response.json();
+        })
         .then(data => {
-            // Очищаем от японских/китайских релизов, если они проскочили
-            const koreanOnly = data.filter(item => {
-                const nameLower = item.name ? item.name.toLowerCase() : '';
-                return !nameLower.includes('japan') && !nameLower.includes('tokyo') && !nameLower.includes('china');
-            });
-
-            // Пересобираем массив с правильными полями и Южной Кореей
-            dramas = koreanOnly.map(item => {
+            // Записываем дорамы прямо в глобальное окно браузера, стирая любое старое аниме
+            window.dramas = data.map(item => {
                 return {
                     id: item.id,
                     title: item.russian || item.name,
                     year: item.aired_on ? item.aired_on.split('-')[0] : '????',
-                    country: 'Южная Корея',
+                    country: 'Южная Корея', // API Шикимори по жанру 33 выдает дорамы
                     poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=2256'
                 };
             });
 
-            // ВОТ ОН, ГЛАВНЫЙ СЕКРЕТ:
-            // Передаем наш новенький массив КОРЕЙСКИХ ДОРАМ в твою функцию отрисовки!
-            renderDramas(dramas);
+            // Сразу же принудительно вызываем фильтр и отрисовку
+            applyDoubleFilter();
         })
-        .catch(error => console.error("Ошибка загрузки дорам:", error));
+        .catch(error => {
+            console.error("Ошибка загрузки дорам:", error);
+        });
 }
 // 3. Функция живого текстового поиска
 function searchDrama() {
@@ -189,7 +186,8 @@ function filterGenre(genreName) {
 }
 
 function applyDoubleFilter() {
-    const filtered = dramas.filter(function(drama) {
+    const currentList = window.dramas || [];
+    const filtered = currentList.filter(function(drama) {
         const matchCountry = (selectedCountry === 'Все' || drama.country === selectedCountry);
         const matchGenre = (selectedGenre === 'Все' || drama.genre === selectedGenre);
         return matchCountry && matchGenre;
