@@ -5,33 +5,33 @@ const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=60";
 console.log("Запуск обновления базы дорам...");
 
 fetch(apiUrl)
-    .then(res => {
+    .then(function(res) {
         if (!res.ok) throw new Error('Ошибка сети: ' + res.status);
         return res.json();
     })
-    .then(data => {
+    .then(function(data) {
         if (!data || !data.results) throw new Error('Пустая база данных');
 
-        // Фильтруем только Азию
-        const asianShows = data.results.filter(item => {
-            if (!item.origin_country) return false;
-            const code = item.origin_country[0];
-            return code === 'KR'  code === 'CN'  code === 'JP';
+        // ИСПРАВЛЕНО: Полностью переписан фильтр стран на классический синтаксис без опечаток
+        const asianShows = data.results.filter(function(item) {
+            if (!item.origin_country || item.origin_country.length === 0) return false;
+            var cCode = item.origin_country[0];
+            return cCode === 'KR'  cCode === 'CN'  cCode === 'JP';
         });
 
-        const newDramas = asianShows.map((item, index) => {
-            let country = "Южная Корея";
+        const newDramas = asianShows.map(function(item, index) {
+            var country = "Южная Корея";
             if (item.origin_country[0] === 'CN') country = "Китай";
             if (item.origin_country[0] === 'JP') country = "Япония";
 
-            let genre = "Романтика";
+            var genre = "Романтика";
             if (item.genre_ids && item.genre_ids.length > 0) {
-                const gId = item.genre_ids[0];
+                var gId = item.genre_ids[0];
                 if (gId === 10759 || gId === 9648) genre = "Экшен";
                 if (gId === 14 || gId === 878) genre = "Фэнтези";
             }
 
-            let poster = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
+            var poster = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
             if (item.poster_path) {
                 poster = "https://image.tmdb.org/t/p/w500" + item.poster_path;
             }
@@ -47,13 +47,13 @@ fetch(apiUrl)
             };
         });
 
-        // Просто сохраняем готовый массив в отдельный файл, не трогая index.html!
-        const fileContent = window.remoteDramas = ${JSON.stringify(newDramas, null, 4)};;
+        // Сохраняем в отдельный файл данных
+        const fileContent = "window.remoteDramas = " + JSON.stringify(newDramas, null, 4) + ";";
         fs.writeFileSync('dramas-data.js', fileContent, 'utf8');
         
-        console.log(Успешно сохранено ${newDramas.length} дорам в файл dramas-data.js!);
+        console.log("Успешно сохранено " + newDramas.length + " дорам в файл dramas-data.js!");
     })
-    .catch(err => {
+    .catch(function(err) {
         console.error("Ошибка:", err);
         process.exit(1);
     });
