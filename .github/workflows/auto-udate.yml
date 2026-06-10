@@ -1,0 +1,40 @@
+name: Auto Update Dramas
+
+# Настраиваем запуск: робот будет срабатывать каждый день в 00:00 по Гринвичу
+# А также его можно будет пнуть вручную кнопкой в панели управления
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Скачиваем текущий код твоего сайта на виртуальный компьютер GitHub
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Устанавливаем окружение Node.js для запуска нашего парсера
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    # 3. Запускаем наш updater.js, созданный на Шаге 2
+    - name: Run script-parser
+      run: node updater.js
+
+    # 4. Проверяем, изменился ли index.html, и сохраняем изменения обратно в репозиторий
+    - name: Commit and Push changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add index.html
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "Изменений нет, каталог уже актуален."
+        else
+          git commit -m "Автоматическое обновление базы дорам [skip ci]"
+          git push
+        fi
