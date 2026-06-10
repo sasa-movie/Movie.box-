@@ -180,18 +180,24 @@ function loadDramasFromAPI() {
         document.getElementById('catalog').innerHTML = ''; 
         
         dramas.forEach(drama => {
-    // 1. Добавляем onclick и передаем туда ID (используем косые кавычки   для удобства)
-    // Замени 'openDrama' на точное название твоей функции открытия, если оно другое!
-    let html = '<div class="card" onclick="openDrama(' + drama.id + ')">'; 
+    // Открываем карточку с вызовом openPlayer
+    var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';
     
+    // Добавляем постер (как в твоей функции выше)
+    html += '<img class="poster-image" src="' + drama.poster + '" alt="' + drama.title + '">';
+    
+    // Добавляем обертку для инфо
+    html += '<div class="card-info">';
+    
+    // Название, год и страна
     html += '<div class="card-title">' + drama.title + '</div>';
     html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
     
-    // 2. Добавь сюда вывод постера, если его не было, чтобы карточки не были пустыми:
-    // html += <img src="${drama.poster}" class="card-poster">; 
+    // Закрываем внутренние дивы и саму карточку
+    html += '</div>'; // закрывает card-info
+    html += '</div>'; // закрывает саму card
     
-    html += '</div>'; // Не забудь закрыть тег карточки </div>, если его не было
-    
+    // Выводим в каталог
     document.getElementById('catalog').innerHTML += html;
 });
 
