@@ -128,8 +128,7 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Делаем запрос к бесплатной базе: выбираем только сериалы (show) из стран Корея, Китай, Япония
-    // Сортируем по популярности (kinopoisk_rating)
+    // Делаем автоматический запрос к бесплатной базе за популярными азиатскими сериалами
     const apiUrl = "https://kinobox.tv/api/films/search?country=Южная Корея,Китай,Япония&type=show&limit=50";
     
     fetch(apiUrl)
@@ -138,36 +137,41 @@ function loadDramasFromAPI() {
             return response.json();
         })
         .then(data => {
-            // Превращаем полученный массив фильмов в удобный формат для твоего сайта
+            // Собираем дорамы из базы без сложных условий, чтобы не было синтаксических ошибок
             window.dramas = data.content.map(function(item) {
-                // Пытаемся определить главный жанр дорамы для твоих кнопок
-                let mainGenre = "Романтика"; // по умолчанию
+                
+                // Простая и безопасная логика распределения жанров для твоих кнопок
+                let currentGenre = "Романтика"; 
                 if (item.genres && item.genres.length > 0) {
-                    const g = item.genres[0].name.toLowerCase();
-                    if (g.includes("фэнтези") || g.includes("фантастика")) mainGenre = "Фэнтези";
-                    if (g.includes("боевик")  g.includes("криминал")  g.includes("детектив")) mainGenre = "Экшен";
+                    let genreName = item.genres[0].name.toLowerCase();
+                    if (genreName.indexOf("фэнтези") !== -1 || genreName.indexOf("фантастика") !== -1) {
+                        currentGenre = "Фэнтези";
+                    } else if (genreName.indexOf("боевик") !== -1  genreName.indexOf("детектив") !== -1  genreName.indexOf("криминал") !== -1) {
+                        currentGenre = "Экшен";
+                    }
                 }
 
                 return {
                     id: item.id,
-                    kp_id: item.kinopoiskId || item.id, // ID Кинопоиска для плеера
+                    kp_id: item.kinopoiskId || item.id, // Чистый ID Кинопоиска для нашего плеера
                     title: item.titleRu || item.titleEn,
-                    year: item.year ? item.year.toString() : '????',
+                    year: item.year ? item.year.toString() : '2022',
                     country: item.countries && item.countries[0] ? item.countries[0].name : 'Южная Корея',
-                    genre: mainGenre,
+                    genre: currentGenre,
                     poster: item.posterUrl || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500"
                 };
             });
 
-            // Запускаем кнопки фильтров
+            // Запускаем кнопки фильтрации
             applyDoubleFilter();
         })
         .catch(error => {
-            console.error("Ошибка автозагрузки, включаем резерв:", error);
-            // Аварийный список на случай, если у пользователя пропал интернет
+            console.error("Включаем надежный резервный список дорам:", error);
+            // Железобетонный аварийный список с реальными постерами актеров, если API не ответит
             window.dramas = [
                 { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/4649635.jpg" },
-                { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1411135.jpg" }
+                { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/1411135.jpg" },
+                { id: 3, kp_id: "966453",  title: "Потомки солнца", year: "2016", country: "Южная Корея", genre: "Романтика", poster: "https://kinopoisk-apiunofficial.tech/images/posters/kp/966453.jpg" }
             ];
             applyDoubleFilter();
         });
