@@ -125,43 +125,46 @@ function renderDramas(list) {
 
 // 2. Функция скачивания актуальной базы КОРЕЙСКИХ ДОРАМ с сервера Shikimori
 function loadDramasFromAPI() {
-    // Запрашиваем из базы Shikimori видео с жанром "Дорама" (id 33)
-    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
+    // Делаем правильный запрос: жанр 33 (дорама), тип live_action (с актерами)
+    const apiUrl = "https://shikimori.one/api/animes?genre=33&kind=live_action&limit=50&order=popularity";
     
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            // Фильтруем данные: оставляем ТОЛЬКО те, где в названии НЕТ упоминания Японии/Китая,
-            // либо те, которые явно относятся к корейской культуре, чтобы отсечь японские лайв-экшены
+            // Чтобы в базу не просочились японские или китайские сериалы,
+            // оставляем только те, у которых в названии нет Японии/Китая
             const koreanOnly = data.filter(item => {
                 const nameLower = item.name ? item.name.toLowerCase() : '';
-                // Исключаем японские и китайские маркеры, если они вдруг попали в этот жанр
                 return !nameLower.includes('japan') && !nameLower.includes('tokyo') && !nameLower.includes('china');
             });
 
-            // Записываем отфильтрованные корейские дорамы в массив dramas
+            // Формируем чистый массив дорам
             dramas = koreanOnly.map(item => {
                 return {
-                    id: item.id, // Обязательно сохраняем ID для плеера!
+                    id: item.id, // ID для плеера
                     title: item.russian || item.name,
                     year: item.aired_on ? item.aired_on.split('-')[0] : '????',
-                    country: 'Южная Корея', // Раз мы отфильтровали, жестко ставим Южную Корею
+                    country: 'Южная Корея', // Раз это корейские дорамы
                     poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=2256'
                 };
             });
 
-            // Очищаем каталог перед выводом карточек
+            // Очищаем каталог перед выводом, чтобы ничего не дублировалось
             document.getElementById('catalog').innerHTML = ''; 
 
-            // Отрисовываем карточки корейских дорам на экран
+            // Отрисовываем корейские дорамы в каталог
             dramas.forEach(drama => {
                 var html = '<div class="card" onclick="openPlayer(' + drama.id + ')">';
+                
+                // Картинка-постер с правильным классом
                 html += '<img class="poster-image" src="' + drama.poster + '" alt="' + drama.title + '">';
+                
+                // Контейнер с текстом
                 html += '<div class="card-info">';
                 html += '<div class="card-title">' + drama.title + '</div>';
                 html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
                 html += '</div>'; // закрывает card-info
-                html += '</div>'; // закрывает card
+                html += '</div>'; // закрывает саму карту card
                 
                 document.getElementById('catalog').innerHTML += html;
             });
@@ -212,17 +215,10 @@ function applyDoubleFilter() {
     renderDramas(filtered);
 }
 
-// 5. Управление окном медиаплеера
 function openPlayer(dramaId) {
-    const drama = dramas.find(function(d) { return d.id === dramaId; });
-    if (!drama) return;
-
-    const playerIframe = document.getElementById('videoPlayer');
-    // Меняем только эту строку внутри функции openPlayer!
-   // Замени строку 251 внутри функции openPlayer на эту:
-   playerIframe.src = 'https://shikimori.me/animes/' + dramaId + '/video_online';
-
-    document.getElementById('playerModal').style.display = 'flex';
+    // Вместо капризного iframe просто открываем просмотр в новой вкладке
+    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
+  document.getElementById('playerModal').style.display = 'flex';
 }
 
 // 6. Закрытие плеера
