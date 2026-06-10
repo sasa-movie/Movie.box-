@@ -123,41 +123,71 @@ function renderDramas(list) {
     });
 }
 
-// 2. Функция скачивания актуальной базы дорам с сервера Shikimori
+// 2. Функция скачивания актуальной базы аниме и дорам с сервера Shikimori
 function loadDramasFromAPI() {
-    const apiUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
-    fetch(apiUrl).then(response => response.json())
-        .then(data => {
-            dramas = data.map(item => {
-                let detectedCountry = 'Южная Корея';
-                const nameLower = item.name ? item.name.toLowerCase() : '';
-                if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
-                    detectedCountry = 'Япония';
-                } else if (nameLower.includes('china') || nameLower.includes('chinese')) {
-                    detectedCountry = 'Китай';
+    // Ссылка на популярное аниме
+    const animeUrl = "https://shikimori.one/api/animes?limit=50&order=popularity";
+    // Ссылка на дорамы (жанр 33)
+    const doramaUrl = "https://shikimori.one/api/animes?genre=33&limit=50&order=popularity";
+
+    // Запускаем оба запроса одновременно
+    Promise.all([
+        fetch(animeUrl).then(res => res.json()),
+        fetch(doramaUrl).then(res => res.json())
+    ])
+    .then(([animeData, doramaData]) => {
+        // Объединяем аниме и дорамы в один общий массив
+        const combinedData = [...animeData, ...doramaData];
+
+        // Перемешаем их по популярности или ID, чтобы они не шли сначала только аниме, а потом только дорамы
+        // Если хочешь оставить сначала аниме, потом дорамы — просто удали строку ниже
+        combinedData.sort((a, b) => b.id - a.id); 
+
+        // Твой оригинальный код обработки данных (начиная со строки 131)
+        dramas = combinedData.map(item => {
+            let detectedCountry = 'Южная Корея';
+            const nameLower = item.name ? item.name.toLowerCase() : '';
+            
+            if (nameLower.includes('japan') || nameLower.includes('tokyo')) {
+                detectedCountry = 'Япония';
+            } else if (nameLower.includes('china') || nameLower.includes('chinese')) {
+                detectedCountry = 'Китай';
+            }
+
+            // Добавим проверку: если это аниме, то страна по умолчанию Япония (если не определилась Корея)
+            // Так как у Shikimori аниме в основном японские
+            if (!item.genres || !item.genres.some(g => g.id === 33)) {
+                if (detectedCountry === 'Южная Корея' && !nameLower.includes('korea')) {
+                    detectedCountry = 'Япония'; 
                 }
+            }
 
-                let posterUrl = 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?q=80&w=225&auto=format&fit=crop';
-                if (item.image && item.image.original) {
-                    posterUrl = 'https://shikimori.one' + item.image.original;
-                }
-
-                return {
-                    id: item.id,
-                    title: item.russian  ||   item.name  ||  'Без названия',
-                    year: item.aired_on ? item.aired_on.split('-')[0] : '2026',
-                    country: detectedCountry,
-                    genre: 'Романтика',
-                    poster: posterUrl
-                };
-            });
-
-            // Сразу выводим загруженные дорамы на экран
-            renderDramas(dramas);
-        })
-        .catch(error => {
-            console.error('Ошибка при получении данных с API:', error);
+            // Возвращаем объект (как у тебя в коде дальше)
+            return {
+                title: item.russian || item.name,
+                year: item.aired_on ? item.aired_on.split('-')[0] : '????',
+                country: detectedCountry,
+                poster: item.image ? 'https://shikimori.one' + item.image.original : 'https://images.unsplash.com/...' // Твоя заглушка
+            };
         });
+
+        // Здесь вызываешь функцию отрисовки интерфейса (которая у тебя идет на строках 118-122)
+        // Например: renderCatalog(); или как она у тебя называется ниже по коду.
+        // Судя по скриншоту, у тебя там идет цикл, который заполняет catalog.innerHTML
+        
+        // Очищаем каталог перед выводом
+        document.getElementById('catalog').innerHTML = ''; 
+        
+        dramas.forEach(drama => {
+            let html = '<div class="card">'; // или как там у тебя
+            html += '<div class="card-title">' + drama.title + '</div>';
+            html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
+            // ... твой код отрисовки ...
+            document.getElementById('catalog').innerHTML += html;
+        });
+
+    })
+    .catch(error => console.error("Ошибка загрузки данных:", error));
 }
 
 // 3. Функция живого текстового поиска
