@@ -29,7 +29,7 @@ fetch(apiUrl, requestOptions)
         const filtered = data.filter(function(item) {
             if (!item.country) return false;
             var c = item.country.toLowerCase();
-            return c.includes('корея')  ||  c.includes('китай')  ||  c.includes('япония')  ||   c.includes('kr')  c.includes('cn');
+            return c.includes('корея') || c.includes('китай') || c.includes('япония') ||  c.includes('kr')  c.includes('cn');
         });
 
         const finalDramas = filtered.map(function(item, index) {
