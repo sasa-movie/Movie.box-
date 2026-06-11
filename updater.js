@@ -29,14 +29,14 @@ fetch(apiUrl, requestOptions)
         const filtered = data.filter(function(item) {
             if (!item.country) return false;
             var c = item.country.toLowerCase();
-            return c.includes('корея') || c.includes('китай') || c.includes('япония') ||  c.includes('kr')  c.includes('cn');
+            return c.includes('корея') || c.includes('китай') || c.includes('япония') || c.includes('kr')  c.includes('cn');
         });
 
         const finalDramas = filtered.map(function(item, index) {
             return {
                 id: index + 1,
                 kp_id: item.kp_id ? item.kp_id.toString() : (item.id ? item.id.toString() : "1411135"),
-                title: item.title  item.ru_title  "Корейская дорама",
+                title: item.title || item.ru_title || "Корейская дорама",
                 year: item.year ? item.year.toString() : "2026",
                 country: item.country.includes('Китай') ? 'Китай' : (item.country.includes('Япония') ? 'Япония' : 'Южная Корея'),
                 genre: item.genre || "Романтика",
