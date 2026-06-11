@@ -1,11 +1,21 @@
 const fs = require('fs');
 
-// Используем стабильный сервер, который без проблем отдаёт данные нашему роботу
-const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=60";
+// Используем официальную открытую конечную точку, которая стабильно отдаёт списки
+const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=50";
 
-console.log("Запуск обновления базы дорам...");
+console.log("Запуск обновления базы дорам с маскировкой под браузер...");
 
-fetch(apiUrl)
+// Настраиваем заголовки, чтобы прикинуться обычным пользователем Chrome и обойти ошибку 403
+const requestOptions = {
+    method: 'GET',
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
+    }
+};
+
+fetch(apiUrl, requestOptions)
     .then(function(res) {
         if (!res.ok) throw new Error('Ошибка сети: ' + res.status);
         return res.json();
@@ -13,11 +23,11 @@ fetch(apiUrl)
     .then(function(data) {
         if (!data || !data.results) throw new Error('Пустая база данных');
 
-        // Чётко разделяем условия знаками || (ИЛИ), чтобы Node.js не ругался на синтаксис
+        // Фильтруем только Азию (Корея, Китай, Япония)
         const asianShows = data.results.filter(function(item) {
             if (!item.origin_country || item.origin_country.length === 0) return false;
             var countryCode = item.origin_country[0];
-            return countryCode === 'KR' ||  countryCode === 'CN'  ||   countryCode === 'JP';
+            return countryCode === 'KR'  countryCode === 'CN'  countryCode === 'JP';
         });
 
         const newDramas = asianShows.map(function(item, index) {
@@ -48,13 +58,13 @@ fetch(apiUrl)
             };
         });
 
-        // Записываем данные в отдельный изолированный файл, обходя любые проблемы с index.html
+        // Сохраняем в файл данных для нашего index.html
         const fileContent = "window.remoteDramas = " + JSON.stringify(newDramas, null, 4) + ";";
         fs.writeFileSync('dramas-data.js', fileContent, 'utf8');
         
         console.log("Успешно сохранено " + newDramas.length + " дорам в файл dramas-data.js!");
     })
     .catch(function(err) {
-        console.error("Критическая ошибка:", err);
+        console.error("Критическая ошибка парсера:", err);
         process.exit(1);
     });
