@@ -129,15 +129,24 @@ function renderDramas(list) {
 }
 
 function loadDramasFromAPI() {
-    // Если робот уже скачал данные, берем их, иначе включаем быстрый резерв
+    // Проверяем: если робот успешно сохранил дорамы, выводим их
     if (window.remoteDramas && window.remoteDramas.length > 0) {
         window.dramas = window.remoteDramas;
+        console.log("Автоматическая лента успешно загружена!");
     } else {
+        // Быстрый резервный список на случай, если файл еще не долетел до сервера
         window.dramas = [
-            { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Романтика", poster: "https://nyaa.shikimori.one/system/animes/original/50796.jpg" }
+            { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://image.tmdb.org/t/p/w500/qXvC4gE7pGf9a9K440BvE1m9K3F.jpg" },
+            { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://image.tmdb.org/t/p/w500/3UInSWh7Xl3E3q0f7B280pEIdtP.jpg" }
         ];
     }
-    applyDoubleFilter();
+    
+    // Перезапускаем фильтры и отрисовку карточек на экране
+    if (typeof applyDoubleFilter === 'function') {
+        applyDoubleFilter();
+    } else if (typeof displayDramas === 'function') {
+        displayDramas(window.dramas);
+    }
 }
 // 3. Функция живого текстового поиска
 function searchDrama() {
