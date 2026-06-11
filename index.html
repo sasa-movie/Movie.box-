@@ -196,7 +196,7 @@ function filterGenre(genreName) {
     
 function openPlayer(kpId, title) {
     let modal = document.getElementById('player-modal');
-    
+
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'player-modal';
@@ -214,13 +214,19 @@ function openPlayer(kpId, title) {
         document.body.appendChild(modal);
     }
 
+    // Очищаем префикс "tmdb-", если он есть, чтобы получить чистый ID для плеера
+    let pureId = kpId ? kpId.toString().replace('tmdb-', '') : '';
+    
+    // Прямая ссылка на рабочий адаптивный плеер, который РАЗРЕШЕНО встраивать в iframe
+    let finalPlayerUrl = 'https://vidsrc.cc/v2/embed/tv/' + pureId + '/1/1';
+
     let htmlContent = '';
-    htmlContent += '<div style="width: 90%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: white; font-family: sans-serif;">';
+    htmlContent += '<div style="width: 90%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #fff;">';
     htmlContent += '<h2 style="margin: 0; font-size: 20px;">' + title + ' (Смотреть онлайн)</h2>';
-    htmlContent += '<button onclick="document.getElementById(\'player-modal\').remove()" style="background: #e50914; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; font-family: sans-serif;">Закрыть</button>';
+    htmlContent += '<button onclick="document.getElementById(\'player-modal\').remove()" style="background: #e50914; color: #fff; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; font-weight: bold;">Закрыть</button>';
     htmlContent += '</div>';
-    htmlContent += '<div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; background: #000; border: 2px solid #333; border-radius: 8px; overflow: hidden;">';
-    htmlContent += '<iframe src="https://vidsrc.cc/v2/embed/tv/' + kpId + '" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>';
+    htmlContent += '<div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; background: #000; border: 2px solid #333;">';
+    htmlContent += '<iframe src="' + finalPlayerUrl + '" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>';
     htmlContent += '</div>';
 
     modal.innerHTML = htmlContent;
