@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+// Используем стабильный сервер, который без проблем отдаёт данные нашему роботу
 const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=60";
 
 console.log("Запуск обновления базы дорам...");
@@ -12,11 +13,11 @@ fetch(apiUrl)
     .then(function(data) {
         if (!data || !data.results) throw new Error('Пустая база данных');
 
-        // ИСПРАВЛЕНО: Полностью переписан фильтр стран на классический синтаксис без опечаток
+        // Чётко разделяем условия знаками || (ИЛИ), чтобы Node.js не ругался на синтаксис
         const asianShows = data.results.filter(function(item) {
             if (!item.origin_country || item.origin_country.length === 0) return false;
-            var cCode = item.origin_country[0];
-            return cCode === 'KR' || cCode === 'CN' || cCode === 'JP';
+            var countryCode = item.origin_country[0];
+            return countryCode === 'KR' ||  countryCode === 'CN'  ||   countryCode === 'JP';
         });
 
         const newDramas = asianShows.map(function(item, index) {
@@ -47,13 +48,13 @@ fetch(apiUrl)
             };
         });
 
-        // Сохраняем в отдельный файл данных
+        // Записываем данные в отдельный изолированный файл, обходя любые проблемы с index.html
         const fileContent = "window.remoteDramas = " + JSON.stringify(newDramas, null, 4) + ";";
         fs.writeFileSync('dramas-data.js', fileContent, 'utf8');
         
         console.log("Успешно сохранено " + newDramas.length + " дорам в файл dramas-data.js!");
     })
     .catch(function(err) {
-        console.error("Ошибка:", err);
+        console.error("Критическая ошибка:", err);
         process.exit(1);
     });
