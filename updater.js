@@ -16,7 +16,7 @@ fetch(apiUrl)
         const asianShows = data.results.filter(function(item) {
             if (!item.origin_country || item.origin_country.length === 0) return false;
             var cCode = item.origin_country[0];
-            return cCode === 'KR'  cCode === 'CN'  cCode === 'JP';
+            return cCode === 'KR' || cCode === 'CN' || cCode === 'JP';
         });
 
         const newDramas = asianShows.map(function(item, index) {
