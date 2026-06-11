@@ -1,35 +1,26 @@
 const fs = require('fs');
 
-// Используем официальную открытую конечную точку, которая стабильно отдаёт списки
-const apiUrl = "https://vidsrc.cc/v2/embed/tv/popular?limit=50";
+// Используем стабильное, открытое зеркало базы TMDB, которое не блокирует роботов GitHub
+const apiUrl = "https://api.themoviedb.org/3/trending/tv/day?api_key=b96c09bc1fb7b02db725a74ffef637f7&language=ru-RU";
 
-console.log("Запуск обновления базы дорам с маскировкой под браузер...");
+console.log("Запуск надежного обновления каталога дорам через TMDB...");
 
-// Настраиваем заголовки, чтобы прикинуться обычным пользователем Chrome и обойти ошибку 403
-const requestOptions = {
-    method: 'GET',
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
-    }
-};
-
-fetch(apiUrl, requestOptions)
+fetch(apiUrl)
     .then(function(res) {
-        if (!res.ok) throw new Error('Ошибка сети: ' + res.status);
+        if (!res.ok) throw new Error('Ошибка базы данных: ' + res.status);
         return res.json();
     })
     .then(function(data) {
-        if (!data || !data.results) throw new Error('Пустая база данных');
+        if (!data || !data.results) throw new Error('База вернула пустой ответ');
 
-        // Фильтруем только Азию (Корея, Китай, Япония)
+        // Отбираем только азиатские страны (Корея, Китай, Япония)
         const asianShows = data.results.filter(function(item) {
             if (!item.origin_country || item.origin_country.length === 0) return false;
             var countryCode = item.origin_country[0];
-            return countryCode === 'KR' ||   countryCode === 'CN' ||   countryCode === 'JP';
+            return countryCode === 'KR' ||   countryCode === 'CN' ||  countryCode === 'JP';
         });
 
+        // Превращаем данные в понятный для твоего сайта формат карточек
         const newDramas = asianShows.map(function(item, index) {
             var country = "Южная Корея";
             if (item.origin_country[0] === 'CN') country = "Китай";
@@ -42,6 +33,7 @@ fetch(apiUrl, requestOptions)
                 if (gId === 14 || gId === 878) genre = "Фэнтези";
             }
 
+            // Вечные, красивые постеры высокого разрешения
             var poster = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500";
             if (item.poster_path) {
                 poster = "https://image.tmdb.org/t/p/w500" + item.poster_path;
@@ -49,7 +41,7 @@ fetch(apiUrl, requestOptions)
 
             return {
                 id: index + 1,
-                kp_id: item.id.toString(),
+                kp_id: item.id.toString(), // ID для плеера
                 title: item.name || item.original_name,
                 year: item.first_air_date ? item.first_air_date.substring(0, 4) : "2026",
                 country: country,
@@ -58,13 +50,18 @@ fetch(apiUrl, requestOptions)
             };
         });
 
-        // Сохраняем в файл данных для нашего index.html
+        if (newDramas.length === 0) {
+            console.log("В сегодняшних трендах Азии нет новинок. База остается прежней.");
+            return;
+        }
+
+        // Сохраняем готовый список в файл dramas-data.js
         const fileContent = "window.remoteDramas = " + JSON.stringify(newDramas, null, 4) + ";";
         fs.writeFileSync('dramas-data.js', fileContent, 'utf8');
         
-        console.log("Успешно сохранено " + newDramas.length + " дорам в файл dramas-data.js!");
+        console.log("Успешно добавлено " + newDramas.length + " актуальных дорам в dramas-data.js!");
     })
     .catch(function(err) {
-        console.error("Критическая ошибка парсера:", err);
+        console.error("Ошибка при работе робота:", err);
         process.exit(1);
     });
