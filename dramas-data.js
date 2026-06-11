@@ -34,5 +34,23 @@ window.remoteDramas = [
         "country": "Южная Корея",
         "genre": "Экшен",
         "poster": "https://image.tmdb.org/t/p/w500/7P8vV99zZpXmK2jA2R13W8vB8g9.jpg"
+    },
+    {
+        "id": 5,
+        "kp_id": "1316603",
+        "title": "История девятихвостого лиса",
+        "year": "2020",
+        "country": "Южная Корея",
+        "genre": "Фэнтези",
+        "poster": "https://image.tmdb.org/t/p/w500/6A7tqDscSInwOWhk9LNoDbaS65b.jpg"
+    },
+    {
+        "id": 6,
+        "kp_id": "1115451",
+        "title": "Гоблин (Токкэби)",
+        "year": "2016",
+        "country": "Южная Корея",
+        "genre": "Фэнтези",
+        "poster": "https://image.tmdb.org/t/p/w500/7I9wE1M2bshI3G23Yx6qYgYIdp0.jpg"
     }
 ];
