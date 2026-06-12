@@ -1,245 +1,87 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script src="dramas-data.js"></script>
-    <link rel="icon" href="data:,">
-    <title>aDrama Local — Смотреть дорамы онлайн</title>
-    <meta name="description" content="Онлайн-кинотеатр aDrama Local. У нас можно удобно смотреть любикие корейские дорамы с переключением серий.">
-    <meta name="keywords" content="adrama local,">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Смотреть Дорамы Онлайн</title>
     <style>
-        body { 
-            background-color: #141414; 
-            color: #fff; 
-            font-family: sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-        }
-        header { 
-            display: flex; 
-            flex-direction: column;
-            gap: 15px;
-            align-items: center; 
-            border-bottom: 2px solid #E50914; 
-            padding-bottom: 15px; 
-            margin-bottom: 20px; 
-        }
-        @media (min-width: 768px) {
-            header {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-        }
-        h1 { color: #E50914; margin: 0; font-size: 28px; }
-        input { padding: 10px; border-radius: 5px; border: none; width: 250px; background: #333; color: white; }
-        
-        .filter-container { display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        .controls-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-
-        .filter-btn, .genre-btn {
-            background-color: #222222;
+        /* Базовые стили для красивого отображения */
+        body {
+            background-color: #141414;
             color: #ffffff;
-            border: 1px solid #444444;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
         }
-        .filter-btn:hover, .genre-btn:hover { background-color: #333333; border-color: #888888; }
-        .filter-btn.active { background-color: #e50914; border-color: #e50914; font-weight: bold; }
-        .genre-btn.active { background-color: #0076ff; border-color: #0076ff; color: #ffffff; font-weight: bold; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
-        .card:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(229, 9, 20, 0.5); }
-        
-        .poster-image { width: 100%; height: 280px; object-fit: cover; background: #2b2b2b; }
-        
-        .card-info { padding: 15px; background: #1c1c1c; flex-grow: 1; }
-        .card-title { font-weight: bold; margin-bottom: 8px; font-size: 16px; color: #fff; line-height: 1.3; }
-        .card-meta { font-size: 13px; color: #e50914; font-weight: bold; }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 10; }
-        .modal-content { width: 85%; max-width: 850px; background: #000; border-radius: 8px; position: relative; }
-        .close-btn { position: absolute; top: -40px; right: 0; font-size: 30px; color: white; cursor: pointer; }
-        
-        iframe { width: 100%; height: 480px; border: none; border-radius: 8px; background: #000; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .dorama-card {
+            background-color: #242424;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #e50914; /* Красный цвет в стиле Netflix */
+        }
+        /* Адаптивный контейнер для плеера (формат 16:9) */
+        .player-container {
+            position: relative;
+            padding-bottom: 56.25%; /* Пропорции видео */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+            margin-top: 15px;
+        }
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>aDrama Local</h1>
-        <input type="text" id="search" placeholder="Поиск дорамы..." oninput="searchDrama()">
-        <div class="filter-container">
-            <div class="controls-row">
-                <button class="filter-btn active" onclick="filterCountry('Все')">Все страны</button>
-                <button class="filter-btn" onclick="filterCountry('Южная Корея')">Южная Корея</button>
-                <button class="filter-btn" onclick="filterCountry('Китай')">Китай</button>
-                <button class="filter-btn" onclick="filterCountry('Япония')">Япония</button>
+    <div class="container">
+        <h1>Dorama Box — Смотреть онлайн в Казахстане</h1>
+        
+        <!-- Карточка одной дорамы -->
+        <div class="dorama-card">
+            <h2>Истинная красота (2020)</h2>
+            <p><strong>Жанр:</strong> комедия, романтика, мелодрама</p>
+            <p><strong>Описание:</strong> История о старшекласснице, которая завоевала популярность благодаря искусству макияжа.</p>
+            
+            <!-- Контейнер с плеером -->
+            <div class="player-container">
+                <!-- Временный рабочий плеер (вручную взят из открытой базы) -->
+                <iframe src="https://example.org" allowfullscreen></iframe>
             </div>
-            <div class="controls-row">
-                <button class="genre-btn active" onclick="filterGenre('Все')">Все жанры</button>
-                <button class="genre-btn" onclick="filterGenre('Романтика')">Романтика</button>
-                <button class="genre-btn" onclick="filterGenre('Фэнтези')">Фэнтези</button>
-                <button class="genre-btn" onclick="filterGenre('Экшен')">Экшен</button>
-            </div>
-        </div> 
-    </header>
-
-    <div class="grid" id="catalog"></div>
-
-    <div class="modal" id="playerModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closePlayer()">&times;</span>
-            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
         </div>
     </div>
 
-<script>
-// Глобальные переменные для хранения базы и состояния фильтров
-let dramas = []; 
-let selectedCountry = 'Все';
-let selectedGenre = 'Все';
-const catalog = document.getElementById('catalog');
+    <!-- ВСТАВЛЯЙТЕ СВОЙ КОД ЯНДЕКС.МЕТРИКИ СТРОГО СЮДА (ПЕРЕД ЗАКРЫВАЮЩИМ ТЕГОМ BODY) -->
+    <!-- Пример кода Метрики: -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://yandex.ru", "ym");
 
-function renderDramas(list) {
-    const catalog = document.getElementById('catalog');
-    catalog.innerHTML = '';
-    
-    if (!list || list.length === 0) {
-        catalog.innerHTML = '<p>Ничего не найдено :(</p>';
-        return;
-    }
+       ym(12345678, "init", { // Вместо 12345678 будет ваш номер счетчика
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <!-- /Яндекс.Метрика -->
 
-    let html = '';
-    list.forEach(function(drama) {
-        // При клике передаем ID Кинопоиска и название дорамы в функцию плеера
-        html += '<div class="card" onclick="openPlayer(\'' + drama.kp_id + '\', \'' + drama.title + '\')">';
-        html += '<img class="poster-image" src="' + drama.poster + '" alt="' + drama.title + '">';
-        html += '<div class="card-info">';
-        html += '<div class="card-title">' + drama.title + '</div>';
-        html += '<div class="card-meta">' + drama.year + ' | ' + drama.country + '</div>';
-        html += '</div>';
-        html += '</div>';
-    });
-    catalog.innerHTML = html;
-}
-
-function loadDramasFromAPI() {
-    // Проверяем: если робот успешно сохранил дорамы, выводим их
-    if (window.remoteDramas && window.remoteDramas.length > 0) {
-        window.dramas = window.remoteDramas;
-        console.log("Автоматическая лента успешно загружена!");
-    } else {
-        // Быстрый резервный список на случай, если файл еще не долетел до сервера
-        window.dramas = [
-            { id: 1, kp_id: "4649635", title: "Алхимия душ", year: "2022", country: "Южная Корея", genre: "Фэнтези", poster: "https://image.tmdb.org/t/p/w500/qXvC4gE7pGf9a9K440BvE1m9K3F.jpg" },
-            { id: 2, kp_id: "1411135", title: "Истинная красота", year: "2020", country: "Южная Корея", genre: "Романтика", poster: "https://image.tmdb.org/t/p/w500/3UInSWh7Xl3E3q0f7B280pEIdtP.jpg" }
-        ];
-    }
-    
-    // Перезапускаем фильтры и отрисовку карточек на экране
-    if (typeof applyDoubleFilter === 'function') {
-        applyDoubleFilter();
-    } else if (typeof displayDramas === 'function') {
-        displayDramas(window.dramas);
-    }
-}
-// 3. Функция живого текстового поиска
-function searchDrama() {
-    const query = document.getElementById('search').value.toLowerCase();
-    const filtered = dramas.filter(function(d) {
-        return d.title.toLowerCase().indexOf(query) !== -1;
-    });
-    renderDramas(filtered);
-}
-
-// 4. Логика фильтрации (Страны и Жанры)
-function filterCountry(countryName) {
-    selectedCountry = countryName;
-    const buttons = document.querySelectorAll('.filter-btn');
-    buttons.forEach(function(btn) {
-        btn.classList.remove('active');
-        if (btn.innerText.includes(countryName) || (countryName === 'Все' && btn.innerText.includes('Все'))) {
-            btn.classList.add('active');
-        }
-    });
-    applyDoubleFilter();
-}
-
-function filterGenre(genreName) {
-    selectedGenre = genreName;
-    const buttons = document.querySelectorAll('.genre-btn');
-    buttons.forEach(function(btn) {
-        btn.classList.remove('active');
-        if (btn.innerText.includes(genreName) || (genreName === 'Все' && btn.innerText.includes('Все'))) {
-            btn.classList.add('active');
-        }
-    });
-    applyDoubleFilter();
-}
-    function applyDoubleFilter() {
-    const listToFilter = window.dramas || [];
-    
-    const filtered = listToFilter.filter(function(drama) {
-        const matchCountry = (selectedCountry === 'Все' || drama.country === selectedCountry);
-        const matchGenre = (selectedGenre === 'Все' || drama.genre === selectedGenre);
-        return matchCountry && matchGenre;
-    });
-
-    // Отрисовываем отфильтрованный список (с маленькой буквы)
-    renderDramas(filtered);
-}
-    
-function openPlayer(kpId, title) {
-    let modal = document.getElementById('player-modal');
-
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'player-modal';
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.width = '100%';
-        modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0,0,0,0.95)';
-        modal.style.zIndex = '10000';
-        modal.style.display = 'flex';
-        modal.style.flexDirection = 'column';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
-        document.body.appendChild(modal);
-    }
-
-    // Очищаем префикс "tmdb-", если он есть, чтобы получить чистый ID для плеера
-    let pureId = kpId ? kpId.toString().replace('tmdb-', '') : '';
-    
-    // Прямая ссылка на рабочий адаптивный плеер, который РАЗРЕШЕНО встраивать в iframe
-    let finalPlayerUrl = 'https://vidsrc.cc/v2/embed/tv/' + pureId + '/1/1';
-
-    let htmlContent = '';
-    htmlContent += '<div style="width: 90%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #fff;">';
-    htmlContent += '<h2 style="margin: 0; font-size: 20px;">' + title + ' (Смотреть онлайн)</h2>';
-    htmlContent += '<button onclick="document.getElementById(\'player-modal\').remove()" style="background: #e50914; color: #fff; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; font-weight: bold;">Закрыть</button>';
-    htmlContent += '</div>';
-    htmlContent += '<div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; background: #000; border: 2px solid #333;">';
-    htmlContent += '<iframe src="' + finalPlayerUrl + '" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>';
-    htmlContent += '</div>';
-
-    modal.innerHTML = htmlContent;
-}
-
-// 6. Закрытие плеера
-function closePlayer() {
-    document.getElementById('playerModal').style.display = 'none';
-    document.getElementById('videoPlayer').src = '';
-}
-
-// Запуск автоматического скачивания дорам при старте сайта (теперь строго в самом низу кода!)
-loadDramasFromAPI();
-</script>
 </body>
 </html>
