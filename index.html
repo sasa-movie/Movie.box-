@@ -3,40 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Смотреть Дорамы Онлайн</title>
+    <title>Фильмы Онлайн в Казахстане</title>
     <style>
-        /* Базовые стили для красивого отображения */
+        /* Стильный темный дизайн сайта */
         body {
             background-color: #141414;
             color: #ffffff;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 1100px;
             margin: 0 auto;
         }
-        .dorama-card {
+        h1 {
+            color: #e50914; /* Красный акцент */
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        /* Сетка для карточек фильмов */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        /* Стили самой карточки */
+        .movie-card {
             background-color: #242424;
             padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
         }
-        h1, h2 {
-            color: #e50914; /* Красный цвет в стиле Netflix */
+        .movie-title {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
         }
-        /* Адаптивный контейнер для плеера (формат 16:9) */
-        .player-container {
+        .movie-info {
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            margin-bottom: 15px;
+        }
+        .movie-info strong {
+            color: #e50914;
+        }
+        /* Адаптивный плеер 16:9 */
+        .player-box {
             position: relative;
-            padding-bottom: 56.25%; /* Пропорции видео */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             border-radius: 8px;
             background: #000;
-            margin-top: 15px;
+            margin-top: auto; /* Прижимает плеер к низу карточки */
         }
-        .player-container iframe {
+        .player-box iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -49,31 +75,46 @@
 <body>
 
     <div class="container">
-        <h1>Dorama Box — Смотреть онлайн в Казахстане</h1>
+        <h1>Movie Box — Фильмы Онлайн</h1>
         
-        <div class="player-container">
-    <iframe src="https://rutube.ru/video/14ac088c56187fd8052ec4daa6331493/" allowfullscreen></iframe>
-</div>
-         </div>
+        <div class="movies-grid">
+
+            <!-- ================= ФИЛЬМ №1 (ОБРАЗЕЦ) ================= -->
+            <div class="movie-card">
+                <h2 class="movie-title">Крминальный город 1</h2>
+                <div class="movie-info">
+                    <p><strong>Жанр:</strong> Боевик, Криминал</p>
+                    <p><strong>Год:</strong> 2019</p>
+                    <p><strong>Описание:</strong> Короткое описание сюжета вашего первого фильма для зрителей.</p>
+                </div>
+                <div class="player-box">
+                    <!-- Замените ссылку в src на свою, когда найдете плеер фильма -->
+                    <iframe src="https://rutube.ru/video/14ac088c56187fd8052ec4daa6331493/" allowfullscreen></iframe>
+                </div>
+            </div>
+            <!-- ================= КОНЕЦ ФИЛЬМА №1 ================= -->
+
+
+            <!-- ================= ФИЛЬМ №2 (ОБРАЗЕЦ) ================= -->
+            <div class="movie-card">
+                <h2 class="movie-title">Криминальный город 2</h2>
+                <div class="movie-info">
+                    <p><strong>Жанр:</strong> боевик</p>
+                    <p><strong>Год:</strong> 2021</p>
+                    <p><strong>Описание:</strong> Сюда вы впишете описание для второго фильма вашего киносайта.</p>
+                </div>
+                <div class="player-box">
+                    <!-- Замените ссылку в src на свою -->
+                    <iframe src="https://rutube.ru/video/abe5df684982d5b3b5e500828f9c2f48/" allowfullscreen></iframe>
+                </div>
+            </div>
+            <!-- ================= КОНЕЦ ФИЛЬМА №2 ================= -->
+
+        </div>
     </div>
 
-    <!-- ВСТАВЛЯЙТЕ СВОЙ КОД ЯНДЕКС.МЕТРИКИ СТРОГО СЮДА (ПЕРЕД ЗАКРЫВАЮЩИМ ТЕГОМ BODY) -->
-    <!-- Пример кода Метрики: -->
-    <script type="text/javascript" >
-       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-       m[i].l=1*new Date();
-       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-       (window, document, "script", "https://yandex.ru", "ym");
-
-       ym(12345678, "init", { // Вместо 12345678 будет ваш номер счетчика
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true,
-            webvisor:true
-       });
-    </script>
-    <!-- /Яндекс.Метрика -->
+    <!-- ТУТ ВАШ СЧЕТЧИК ЯНДЕКС.МЕТРИКИ (ВСТАВЬТЕ ЕГО ДЛЯ НОВОГО САЙТА) -->
+    <!-- (Скопируйте сюда код из ЛК Метрики для второго домена) -->
 
 </body>
 </html>
