@@ -21,21 +21,27 @@
             margin-bottom: 30px;
             font-size: 2.5rem;
         }
-        /* Сетка для карточек фильмов */
-        .movies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        /* Стили самой карточки */
-        .movie-card {
-            background-color: #242424;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-        }
+       /* Правильная адаптивная сетка */
+.movie-grid {
+    display: grid;
+    /* Разрешаем создавать столько колонок по 250px, сколько поместится на экране */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    /* Делаем одинаковые отступы во все стороны между карточками */
+    gap: 30px; 
+    padding: 20px;
+}
+
+/* Стили для самих карточек */
+.movie-card {
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    /* Фиксируем высоту или даем ей подстраиваться автоматически */
+    height: 100%; 
+    box-sizing: border-box;
+} 
         .movie-title {
             color: #fff;
             margin-top: 0;
