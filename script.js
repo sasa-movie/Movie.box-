@@ -54,7 +54,7 @@
 
     if (overlay && sidebar) {
         overlay.addEventListener('click', function() {
-            sidebar.classList.remove('active');
+            sidebar.classList.remove('not active');
             overlay.classList.remove('active');
         });
     }
