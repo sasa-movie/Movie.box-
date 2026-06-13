@@ -1,34 +1,47 @@
 <script>
    document.addEventListener('DOMContentLoaded', function () {
-          // Логика для бокового меню
+    
+    // --- ЗДЕСЬ ВАШ СТАРЫЙ КОД ПОИСКА ---
+    // (Оставьте код поиска, который мы делали ранее, прямо тут)
+
+
+    // --- ИСПРАВЛЕННЫЙ КОД ДЛЯ БОКОВОГО МЕНЮ ---
     const menuBtn = document.getElementById('menu-btn');
     const closeBtn = document.getElementById('close-btn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
 
-    // Открываем меню по клику на ☰
-    if (menuBtn) {
+    // Проверяем в консоли, нашел ли скрипт кнопку
+    if (!menuBtn) {
+        console.error("Ошибка: Кнопка id='menu-btn' не найдена в HTML!");
+    }
+
+    if (menuBtn && sidebar && overlay) {
+        // Открытие меню
         menuBtn.addEventListener('click', function() {
             sidebar.classList.add('active');
             overlay.classList.add('active');
         });
     }
 
-    // Закрываем меню по клику на крестик ×
-    if (closeBtn) {
+    if (closeBtn && sidebar && overlay) {
+        // Закрытие на крестик
         closeBtn.addEventListener('click', function() {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
         });
     }
 
-    // Закрываем меню, если кликнули на темный фон вне меню
-    if (overlay) {
+    if (overlay && sidebar) {
+        // Закрытие при клике на темную область
         overlay.addEventListener('click', function() {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
         });
     }
+
+   });
+
 
     // 1. Находим поле поиска по его ID
     const searchInput = document.getElementById('search-input');
