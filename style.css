@@ -103,60 +103,60 @@
             margin-bottom: 30px;
             font-size: 2.5rem;
         }
-       /* Правильная адаптивная сетка */
-.movie-grid {
+       /* 1. Превращаем контейнер, где лежат карточки, в идеальную сетку */
+/* Мы используем тег body, так как ваши карточки лежат прямо в нем */
+body {
     display: grid;
-    /* Разрешаем создавать столько колонок по 250px, сколько поместится на экране */
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-    /* Делаем одинаковые отступы во все стороны между карточками */
-    gap: 30px; 
-    padding: 20px;
+    /* Магия: создаем колонки шириной ровно 45% от экрана на мобилке, чтобы помещалось по 2 фильма в ряд */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;                 /* Одинаковый аккуратный отступ между всеми карточками */
+    padding: 12px;
+    background-color: #0a0a0a; /* Возвращаем ваш темный фон */
+    box-sizing: border-box;
 }
 
-/* Стили для самих карточек */
+/* Из сетки исключаем заголовки, поиск и меню, чтобы они растягивались на всю ширину сверху */
+h1, h2:not(.movie-title), .search-container, #menu-btn, #sidebar, .sidebar-overlay {
+    grid-column: 1 / -1;       /* Приказываем им встать на всю ширину экрана */
+}
+
+/* 2. Настраиваем уменьшенные карточки дорам */
 .movie-card {
-    background-color: #1a1a1a;
-    border-radius: 8px;
-    padding: 20px;
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 10px;             /* Минимальные отступы, чтобы сберечь место */
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    /* Фиксируем высоту или даем ей подстраиваться автоматически */
-    height: 100%; 
-    box-sizing: border-box;
-    translation: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
-} 
-        .movie-title {
-            color: #fff;
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.4rem;
-        }
-        .movie-info {
-            font-size: 0.9rem;
-            color: #aaaaaa;
-            margin-bottom: 15px;
-        }
-        .movie-info strong {
-            color: #e50914;
-        }
-        /* Адаптивный плеер 16:9 */
-        .player-box {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 8px;
-            background: #000;
-            margin-top: auto; /* Прижимает плеер к низу карточки */
-        }
-        .player-box iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+    justify-content: space-between; /* Элементы внутри будут распределены ровно */
+    height: 100%;              /* Все карточки в одном ряду будут строго одной высоты! */
+    margin: 0 !important;      /* Сбрасываем старые кривые отступы */
+}
+
+/* 3. Делаем тексты компактными под маленький размер */
+.movie-title {
+    font-size: 14px !important; /* Уменьшаем название дорамы */
+    margin: 0 0 6px 0 !important;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.movie-info p {
+    font-size: 11px !important; /* Делаем описание и жанры мелкими и аккуратными */
+    margin: 2px 0 !important;
+    color: #bbb;
+}
+
+/* 4. Намертво фиксируем размер плеера, чтобы он не ломал сетку */
+.player-box iframe {
+    width: 100% !important;     /* Видео займет ровно ширину маленькой карточки */
+    height: 110px !important;   /* Уменьшаем высоту плеера под мобильный экран */
+    border-radius: 6px;
+    margin-top: auto;           /* Прижимает плеер к самому низу карточки */
+    border: none;
+}
+
        /* Стили для строки поиска */
 .search-container {
     margin-bottom: 25px;
