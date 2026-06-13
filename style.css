@@ -214,43 +214,77 @@ h1, h2:not(.movie-title), .search-container, #menu-btn, #sidebar, .sidebar-overl
 }
 /* 1. Находим общий контейнер, в котором лежат все ваши фильмы.
    В вашей верстке это обычно тег body или главный контейнер сайта */
+     /* Общие настройки страницы */
 body {
-     /* УДАЛИТЕ ЭТИ ТРИ СТРОЧКИ ИЗ body, ЕСЛИ ОНИ ТАМ ЕСТЬ: */
-display: flex;
-flex-direction: column;
-align-items: center;
-
-}
-
-/* 2. Делаем так, чтобы карточки фильмов начали вставать по бокам друг от друга */
-.movie-card {
-    display: inline-block; /* Позволяет карточкам вставать в один ряд */
-    vertical-align: top;
-    width: 300px;          /* СУЩЕСТВЕННО УМЕНЬШАЕМ ШИРИНУ карточки */
-    margin: 15px;          /* Делаем отступы между карточками со всех сторон */
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 15px;         /* Уменьшаем внутренние отступы, чтобы карточка сжалась */
+    background-color: #0a0a0a;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 12px;
     box-sizing: border-box;
+    
+    /* Включаем сетку прямо для всего тела страницы */
+    display: grid;
+    /* Создаем 2 одинаковые колонки для мобилок (по 2 фильма в ряд) */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; /* Одинаковый отступ между карточками со всех сторон */
 }
 
-/* 3. Уменьшаем шрифты внутри карточки, чтобы они смотрелись аккуратно */
+/* Элементы шапки, которые НЕ должны вставать в колонки (заголовок, меню, поиск) */
+/* Мы приказываем им растянуться на всю ширину экрана (от 1 до последней колонки) */
+h1, .search-container, #menu-btn, #sidebar, .sidebar-overlay {
+    grid-column: 1 / -1; 
+}
+
+/* Настройка уменьшенных карточек дорам */
+.movie-card {
+    background: #141414;
+    border: 1px solid #252525;
+    border-radius: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    
+    /* Делаем так, чтобы содержимое внутри карточки тоже выравнивалось */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Карточки в одном ряду будут строго одинаковой высоты, без дыр! */
+    margin: 0 !important; /* Убираем старые отступы, которые косили сайт */
+}
+
+/* Уменьшаем шрифты, чтобы всё аккуратно помещалось в мини-карточку */
 .movie-title {
-    font-size: 18px;       /* Название фильма становится компактнее */
-    margin-bottom: 8px;
+    font-size: 13px !important;
+    color: #ffffff;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.2;
 }
 
 .movie-info p {
-    font-size: 13px;       /* Уменьшаем текст жанра, года и описания */
-    margin: 4px 0;
+    font-size: 11px !important;
+    margin: 2px 0 !important;
+    color: #aaaaaa;
 }
 
-/* 4. САМОЕ ВАЖНОЕ: Уменьшаем сам плеер (видео), чтобы он не растягивал маленькую карточку */
+/* Фиксируем и уменьшаем плееры под размер мини-карточек */
 .player-box iframe {
-    width: 100% !important; /* Плеер четко подстроится под ширину карточки (300px) */
-    height: 170px !important;/* Сильно уменьшаем высоту плеера, чтобы он стал аккуратным */
+    width: 100% !important;
+    height: 110px !important; /* Уменьшенная высота, чтобы плеер не разносил сетку */
     border-radius: 6px;
-    margin-top: 10px;
+    border: none;
+    margin-top: 6px;
 }
+
+/* Если сайт откроют на компьютере или планшете, карточки автоматически встанут по 3-4 в ряд */
+@media (min-width: 768px) {
+    body {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        padding: 20px;
+    }
+    .player-box iframe {
+        height: 140px !important;
+    }
+}
+
 
     </style>
