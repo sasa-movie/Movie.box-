@@ -14,26 +14,46 @@
 }
 
 /* Боковая панель (изначально спрятана за левым краем экрана на -250px) */
+/* Боковая панель (шторка) */
 .sidebar {
     position: fixed;
     top: 0;
+    /* НА СТАРТЕ ПРЯЧЕМ МЕНЮ: сдвигаем его влево за экран на всю его ширину */
     left: -250px; 
     width: 250px;
     height: 100%;
-    background-color: #141414; /* Темный цвет под дизайн сайта */
+    background-color: #141414;
     box-shadow: 2px 0px 15px rgba(0, 0, 0, 0.7);
-    z-index: 100;
+    z-index: 1000; /* Поднимаем выше всего на странице */
     padding-top: 60px;
-    /* Скорость плавного выезда меню (0.3 секунды) */
+    /* Плавная анимация выезда (0.3 секунды) */
     transition: left 0.3s ease-in-out; 
 }
 
-/* Этот класс будет добавляться через скрипт при клике на полоски */
+/* ЭТОТ КЛАСС АКТИВИРУЕТСЯ ПО КЛИКУ ЧЕРЕЗ JS: возвращает меню на экран */
 .sidebar.active {
-    left: 0; /* Меню выезжает */
+    left: 0 !important; 
 }
 
-/* Кнопка закрытия (крестик) */
+/* Темный фон-затемнение вокруг открытого меню */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    /* НА СТАРТЕ ТОЖЕ ПРЯЧЕМ */
+    display: none; 
+}
+
+/* Показываем фон, когда меню открыто */
+.sidebar-overlay.active {
+    display: block !important;
+}
+
+/* Кнопка закрытия (крестик внутри меню) */
 .close-trigger-btn {
     position: absolute;
     top: 15px;
@@ -44,6 +64,7 @@
     color: #ff0000;
     cursor: pointer;
 }
+
 
 /* Контейнер для ссылок */
 .sidebar-links {
@@ -66,23 +87,7 @@
     color: #ff0000;
 }
 
-/* Задний темный фон для остального сайта */
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 99;
-    display: none;
-}
-
-.sidebar-overlay.active {
-    display: block;
-}
-
-        {
+     {
           scroll-behavior: smooth;
          }
         /* Стильный темный дизайн сайта */
