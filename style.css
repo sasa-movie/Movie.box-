@@ -86,175 +86,59 @@
           scroll-behavior: smooth;
          }
         /* Стильный темный дизайн сайта */
-        body {
-            background-color: #141414;
-            color: #ffffff;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #e50914; /* Красный акцент */
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-        }
-       /* 1. Превращаем контейнер, где лежат карточки, в идеальную сетку */
-/* Мы используем тег body, так как ваши карточки лежат прямо в нем */
-body {
-    display: grid;
-    /* Магия: создаем колонки шириной ровно 45% от экрана на мобилке, чтобы помещалось по 2 фильма в ряд */
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;                 /* Одинаковый аккуратный отступ между всеми карточками */
-    padding: 12px;
-    background-color: #0a0a0a; /* Возвращаем ваш темный фон */
-    box-sizing: border-box;
-}
-
-/* Из сетки исключаем заголовки, поиск и меню, чтобы они растягивались на всю ширину сверху */
-h1, h2:not(.movie-title), .search-container, #menu-btn, #sidebar, .sidebar-overlay {
-    grid-column: 1 / -1;       /* Приказываем им встать на всю ширину экрана */
-}
-
-/* 2. Настраиваем уменьшенные карточки дорам */
-.movie-card {
-    background: #141414;
-    border: 1px solid #222;
-    border-radius: 10px;
-    padding: 10px;             /* Минимальные отступы, чтобы сберечь место */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Элементы внутри будут распределены ровно */
-    height: 100%;              /* Все карточки в одном ряду будут строго одной высоты! */
-    margin: 0 !important;      /* Сбрасываем старые кривые отступы */
-}
-
-/* 3. Делаем тексты компактными под маленький размер */
-.movie-title {
-    font-size: 14px !important; /* Уменьшаем название дорамы */
-    margin: 0 0 6px 0 !important;
-    color: #fff;
-    line-height: 1.2;
-}
-
-.movie-info p {
-    font-size: 11px !important; /* Делаем описание и жанры мелкими и аккуратными */
-    margin: 2px 0 !important;
-    color: #bbb;
-}
-
-/* 4. Намертво фиксируем размер плеера, чтобы он не ломал сетку */
-.player-box iframe {
-    width: 100% !important;     /* Видео займет ровно ширину маленькой карточки */
-    height: 110px !important;   /* Уменьшаем высоту плеера под мобильный экран */
-    border-radius: 6px;
-    margin-top: auto;           /* Прижимает плеер к самому низу карточки */
-    border: none;
-}
-
-       /* Стили для строки поиска */
-.search-container {
-    margin-bottom: 25px;
-    width: 100%;
-}
-#movieSearch {
-    width: 100%;
-    padding: 14px 20px;
-    font-size: 16px;
-    background-color: #2f2f2f;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    color: #fff;
-    outline: none;
-    transition: border-color 0.3s, background-color 0.3s;
-}
-#movieSearch:focus {
-    border-color: #e50914;
-    background-color: #1f1f1f;
-} 
-/* Контейнер для центрирования поиска */
-.search-container {
-    width: 100%;
-    max-width: 600px;        /* Максимальная ширина поиска на больших экранах */
-    margin: 20px auto;       /* Отступы сверху/снизу и центрирование */
-    padding: 0 15px;         /* Отступы по бокам на мобилках */
-    box-sizing: border-box;
-}
-
-/* Стили для самого поля ввода */
-#search-input {
-    width: 100%;
-    padding: 14px 20px;      /* Делаем поле высоким и просторным внутри */
-    font-size: 18px;         /* Увеличиваем размер шрифта, чтобы текст был крупным */
-    color: white;            /* Белый цвет текста при вводе */
-    background-color: #1e1e1e; /* Темный фон инпута под цвет сайта */
-    border: 2px solid #333;  /* Ненавязчивая рамка */
-    border-radius: 30px;     /* Красивые круглые края (как у Google или ADrama) */
-    outline: none;           /* Убираем стандартную синюю рамку браузера при клике */
-    transition: all 0.3s ease; /* Плавная анимация при клике */
-    box-sizing: border-box;
-}
-
-/* Эффект, когда пользователь нажимает на поиск (инпут подсвечивается) */
-#search-input:focus {
-    border-color: #ff0000;   /* Рамка становится ярко-красной */
-    background-color: #252525; /* Фон становится чуть светлее */
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); /* Мягкое красное свечение вокруг */
-}
-
-/* Цвет подсказки "Поиск дорам и фильмов..." */
-#search-input::placeholder {
-    color: #888;
-    font-size: 16px;
-}
-/* 1. Находим общий контейнер, в котором лежат все ваши фильмы.
-   В вашей верстке это обычно тег body или главный контейнер сайта */
-     /* Общие настройки страницы */
+        /* Базовые настройки страницы */
 body {
     background-color: #0a0a0a;
     color: white;
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 12px;
+    padding: 10px;
     box-sizing: border-box;
     
-    /* Включаем сетку прямо для всего тела страницы */
-    display: grid;
-    /* Создаем 2 одинаковые колонки для мобилок (по 2 фильма в ряд) */
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 12px; /* Одинаковый отступ между карточками со всех сторон */
+    /* Включаем гибкий контейнер */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;       /* Позволяет карточкам переноситься на новые ряды */
+    justify-content: center; /* Центрируем карточки на экране */
+    gap: 12px;             /* Аккуратный отступ между карточками */
 }
 
-/* Элементы шапки, которые НЕ должны вставать в колонки (заголовок, меню, поиск) */
-/* Мы приказываем им растянуться на всю ширину экрана (от 1 до последней колонки) */
-h1, .search-container, #menu-btn, #sidebar, .sidebar-overlay {
-    grid-column: 1 / -1; 
+/* Растягиваем шапку и поиск на всю ширину сверху, чтобы они не вставали в один ряд с фильмами */
+h1, .search-container, #menu-btn, #sidebar, .sidebar-overlay, header, nav {
+    flex-basis: 100%;
+    width: 100%;
+    text-align: center;
 }
 
-/* Настройка уменьшенных карточек дорам */
+/* Главный заголовок сайта */
+h1 {
+    color: #ff0000;
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* УМЕНЬШАЕМ РАЗМЕР КАРТОЧЕК ДОРАМ */
 .movie-card {
+    /* На мобилке будет помещаться ровно по 2 фильма в ряд с учетом отступов */
+    width: calc(50% - 12px); 
+    min-width: 160px;       /* Защита от слишком сильного сжатия */
+    max-width: 280px;       /* Ограничение ширины для больших экранов */
     background: #141414;
     border: 1px solid #252525;
     border-radius: 10px;
     padding: 10px;
     box-sizing: border-box;
     
-    /* Делаем так, чтобы содержимое внутри карточки тоже выравнивалось */
+    /* Выравниваем внутренности карточки */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%; /* Карточки в одном ряду будут строго одинаковой высоты, без дыр! */
-    margin: 0 !important; /* Убираем старые отступы, которые косили сайт */
 }
 
-/* Уменьшаем шрифты, чтобы всё аккуратно помещалось в мини-карточку */
+/* Уменьшаем шрифты под новый компактный размер */
 .movie-title {
-    font-size: 13px !important;
+    font-size: 14px !important;
     color: #ffffff;
     margin: 0 0 6px 0 !important;
     line-height: 1.2;
@@ -266,25 +150,25 @@ h1, .search-container, #menu-btn, #sidebar, .sidebar-overlay {
     color: #aaaaaa;
 }
 
-/* Фиксируем и уменьшаем плееры под размер мини-карточек */
+/* УМЕНЬШАЕМ ВИДЕОПЛЕЕР ПОД РАЗМЕР КАРТОЧКИ */
 .player-box iframe {
     width: 100% !important;
-    height: 110px !important; /* Уменьшенная высота, чтобы плеер не разносил сетку */
+    height: 110px !important; /* Уменьшенная высота, чтобы плеер аккуратно вставал в мини-карточку */
     border-radius: 6px;
     border: none;
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
-/* Если сайт откроют на компьютере или планшете, карточки автоматически встанут по 3-4 в ряд */
+/* Для больших экранов (компьютеры/планшеты) увеличиваем количество карточек в ряд */
 @media (min-width: 768px) {
-    body {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        padding: 20px;
+    .movie-card {
+        width: 240px;
     }
     .player-box iframe {
         height: 140px !important;
     }
 }
+
 
 
     </style>
