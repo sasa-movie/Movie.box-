@@ -1,40 +1,37 @@
 <script>
    document.addEventListener('DOMContentLoaded', function () {
-    
+    console.log("Скрипт Movie Box успешно запущен!");
+
     // ==========================================
-    // 1. КОД ДЛЯ РАБОТЫ ПОИСКА
+    // 1. УНИВЕРСАЛЬНЫЙ ПОИСК
     // ==========================================
     const searchInput = document.getElementById('search-input');
     const movieCards = document.querySelectorAll('.movie-card');
 
     if (searchInput) {
         searchInput.addEventListener('input', function () {
-            // Берем текст из поиска, убираем лишние пробелы и переводим в нижний регистр
             const filterText = searchInput.value.toLowerCase().trim();
 
             movieCards.forEach(function (card) {
-                // Ищем заголовок внутри карточки
-                const titleElement = card.querySelector('.movie-title');
+                // Ищем заголовок (поддерживает и обычный h2, и класс movie-title)
+                const titleElement = card.querySelector('.movie-title') || card.querySelector('h2');
                 
                 if (titleElement) {
                     const movieTitle = titleElement.textContent.toLowerCase();
 
-                    // Проверяем: если название фильма содержит то, что ввел пользователь
+                    // Если текст из поиска есть в названии фильма — показываем, если нет — скрываем
                     if (movieTitle.includes(filterText)) {
-                        card.style.display = ''; // Показываем карточку (очищаем display)
+                        card.style.display = ''; 
                     } else {
-                        card.style.display = 'none'; // Скрываем карточку
+                        card.style.display = 'none'; 
                     }
                 }
             });
         });
-    } else {
-        console.error("Поиск сломался: Инпут с id='search-input' не найден!");
     }
 
-
     // ==========================================
-    // 2. КОД ДЛЯ БОКОВОГО МЕНЮ (Три полоски)
+    // 2. БОКОВОЕ МЕНЮ (Три полоски)
     // ==========================================
     const menuBtn = document.getElementById('menu-btn');
     const closeBtn = document.getElementById('close-btn');
@@ -61,7 +58,6 @@
             overlay.classList.remove('active');
         });
     }
-
 });
 
- </script>
+</script>
