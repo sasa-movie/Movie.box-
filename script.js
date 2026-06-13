@@ -30,34 +30,4 @@
         });
     }
 
-    // ==========================================
-    // 2. БОКОВОЕ МЕНЮ (Три полоски)
-    // ==========================================
-    const menuBtn = document.getElementById('menu-btn');
-    const closeBtn = document.getElementById('close-btn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-
-    if (menuBtn && sidebar && overlay) {
-        menuBtn.addEventListener('click', function() {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-        });
-    }
-
-    if (closeBtn && sidebar && overlay) {
-        closeBtn.addEventListener('click', function() {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    }
-
-    if (overlay && sidebar) {
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('not active');
-            overlay.classList.remove('active');
-        });
-    }
-});
-
 </script>
