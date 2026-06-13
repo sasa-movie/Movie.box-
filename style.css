@@ -1,4 +1,87 @@
 <style>
+/* Кнопка три полоски */
+.menu-trigger-btn {
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    position: absolute; /* Закрепляем в левом верхнем углу */
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+}
+
+/* Боковая панель (изначально спрятана за левым краем экрана на -250px) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; 
+    width: 250px;
+    height: 100%;
+    background-color: #141414; /* Темный цвет под дизайн сайта */
+    box-shadow: 2px 0px 15px rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    padding-top: 60px;
+    /* Скорость плавного выезда меню (0.3 секунды) */
+    transition: left 0.3s ease-in-out; 
+}
+
+/* Этот класс будет добавляться через скрипт при клике на полоски */
+.sidebar.active {
+    left: 0; /* Меню выезжает */
+}
+
+/* Кнопка закрытия (крестик) */
+.close-trigger-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: #ff0000;
+    cursor: pointer;
+}
+
+/* Контейнер для ссылок */
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Сами ссылки в меню */
+.sidebar-item {
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border-bottom: 1px solid #222;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-item:hover {
+    background-color: #222;
+    color: #ff0000;
+}
+
+/* Задний темный фон для остального сайта */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+    display: none;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
         {
           scroll-behavior: smooth;
          }
