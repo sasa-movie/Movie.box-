@@ -1,5 +1,35 @@
 <script>
    document.addEventListener('DOMContentLoaded', function () {
+          // Логика для бокового меню
+    const menuBtn = document.getElementById('menu-btn');
+    const closeBtn = document.getElementById('close-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    // Открываем меню по клику на ☰
+    if (menuBtn) {
+        menuBtn.addEventListener('click', function() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        });
+    }
+
+    // Закрываем меню по клику на крестик ×
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+
+    // Закрываем меню, если кликнули на темный фон вне меню
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+
     // 1. Находим поле поиска по его ID
     const searchInput = document.getElementById('search-input');
     // 2. Находим все карточки фильмов на странице
