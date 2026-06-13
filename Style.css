@@ -1,1 +1,97 @@
+<style>
+        {
+          scroll-behavior: smooth;
+         }
+        /* Стильный темный дизайн сайта */
+        body {
+            background-color: #141414;
+            color: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #e50914; /* Красный акцент */
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+       /* Правильная адаптивная сетка */
+.movie-grid {
+    display: grid;
+    /* Разрешаем создавать столько колонок по 250px, сколько поместится на экране */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    /* Делаем одинаковые отступы во все стороны между карточками */
+    gap: 30px; 
+    padding: 20px;
+}
 
+/* Стили для самих карточек */
+.movie-card {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    /* Фиксируем высоту или даем ей подстраиваться автоматически */
+    height: 100%; 
+    box-sizing: border-box;
+    translation: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
+} 
+        .movie-title {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        .movie-info {
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            margin-bottom: 15px;
+        }
+        .movie-info strong {
+            color: #e50914;
+        }
+        /* Адаптивный плеер 16:9 */
+        .player-box {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+            margin-top: auto; /* Прижимает плеер к низу карточки */
+        }
+        .player-box iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+       /* Стили для строки поиска */
+.search-container {
+    margin-bottom: 25px;
+    width: 100%;
+}
+#movieSearch {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    background-color: #2f2f2f;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+#movieSearch:focus {
+    border-color: #e50914;
+    background-color: #1f1f1f;
+} 
+    </style>
