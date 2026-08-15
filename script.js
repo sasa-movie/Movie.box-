@@ -1,7 +1,7 @@
 // 1. Вставляем ваш бесплатный ключ и адрес TMDB API
-const API_KEY = "9714615b02661885225a819fe106562e"; // Ваш ключ со скриншота
-const API_URL = "https://api.themoviedb.org/3"; // Правильный API URL
-const IMAGE_URL = "https://image.tmdb.org/t/p/w200"; // Базовый URL для постеров
+const API_KEY = "9714615b026618852258a19fe106562e";
+const API_URL = "https://api.themoviedb.org/3";
+const IMAGE_URL = "https://image.tmdb.org/t/p/w200";
 
 // 2. Находим элементы на странице
 const searchInput = document.querySelector('.search-input') || document.querySelector('input[type="text"]');
@@ -12,13 +12,10 @@ async function searchDorama(query) {
     if (!query.trim()) return;
 
     try {
-        // Делаем запрос к поиску сериалов TMDB (параметр language=ru-RU включает русский язык)
         const response = await fetch(`${API_URL}/search/tv?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`);
         const data = await response.json();
 
-        // Очищаем экран перед выводом новых результатов
-        resultsContainer.innerHTML = ""; 
-
+        resultsContainer.innerHTML = "";
         const doramas = data.results;
 
         if (!doramas || doramas.length === 0) {
@@ -26,19 +23,16 @@ async function searchDorama(query) {
             return;
         }
 
-        // 4. Отрисовка полученных дорам
         doramas.forEach(dorama => {
             const card = document.createElement('div');
-            // Стилизуем карточки, чтобы они красиво смотрелись на черном фоне
+            card.classList.add('card');
             card.style.cssText = "color: white; margin: 15px; padding: 10px; background: #1a1a1a; border-radius: 8px; display: inline-block; width: 180px; vertical-align: top; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
-            
-            // Если у сериала есть постер, формируем на него ссылку, иначе ставим заглушку
-            const posterUrl = dorama.poster_path 
-                ? `${IMAGE_URL}${dorama.poster_path}` // Исправлено: правильный URL
+
+            const posterUrl = dorama.poster_path
+                ? `${IMAGE_URL}${dorama.poster_path}`
                 : 'https://via.placeholder.com/200x300?text=Нет+постера';
 
-            // Берем название (name) и дату первого выхода (first_air_date)
-            const title = dorama.name || dorama.original_name;
+            const title = dorama.name || dorama.original_name || 'Без названия';
             const year = dorama.first_air_date ? dorama.first_air_date.substring(0, 4) : '—';
             const rating = dorama.vote_average ? dorama.vote_average.toFixed(1) : '0';
 
@@ -47,16 +41,17 @@ async function searchDorama(query) {
                 <h3 style="margin: 8px 0 4px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</h3>
                 <p style="margin: 0; font-size: 12px; color: #aaa;">Год: ${year} | ⭐ ${rating}</p>
             `;
-            
+
             resultsContainer.appendChild(card);
         });
 
     } catch (error) {
         console.error("Ошибка при работе с TMDB API:", error);
+        resultsContainer.innerHTML = "<p style='color: red; padding: 20px;'>Произошла ошибка при загрузке данных</p>";
     }
 }
 
-// 5. Отслеживаем нажатие клавиши Enter в поисковой строке
+// 4. Отслеживаем нажатие клавиши Enter в поисковой строке
 if (searchInput) {
     searchInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
