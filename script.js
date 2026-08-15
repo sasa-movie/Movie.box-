@@ -7,14 +7,28 @@ const IMAGE_URL = "https://image.tmdb.org/t/p/w200";
 const searchInput = document.getElementById('search-input');
 const resultsContainer = document.querySelector('.movies-grid');
 
+console.log("✅ Скрипт загружен!");
+console.log("🔍 Поле поиска:", searchInput);
+console.log("📦 Контейнер:", resultsContainer);
+
 // 3. Функция поиска (для сериалов/дорам)
 async function searchDorama(query) {
-    if (!query.trim()) return;
+    console.log("🔍 Поиск:", query);
+    
+    if (!query.trim()) {
+        console.log("⚠️ Пустой запрос");
+        return;
+    }
 
     try {
         // Запрос к поиску сериалов (TV)
-        const response = await fetch(`${API_URL}/search/tv?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`);
+        const url = `${API_URL}/search/tv?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`;
+        console.log("📡 Запрос:", url);
+        
+        const response = await fetch(url);
         const data = await response.json();
+        
+        console.log("📊 Получено результатов:", data.results ? data.results.length : 0);
 
         // Очищаем контейнер
         resultsContainer.innerHTML = "";
@@ -22,7 +36,12 @@ async function searchDorama(query) {
         const doramas = data.results;
 
         if (!doramas || doramas.length === 0) {
-            resultsContainer.innerHTML = `<p style="color: white; padding: 20px;">Ничего не найдено</p>`;
+            resultsContainer.innerHTML = `
+                <div style="color: white; padding: 40px; text-align: center; width: 100%;">
+                    <h3>😕 Ничего не найдено</h3>
+                    <p>Попробуйте другое название</p>
+                </div>
+            `;
             return;
         }
 
@@ -44,7 +63,7 @@ async function searchDorama(query) {
 
             // Собираем карточку
             card.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; color: white; padding: 10px; background: #1a1a1a; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                <div style="display: flex; flex-direction: column; align-items: center; color: white; padding: 10px; background: #1a1a1a; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 200px; min-height: 350px;">
                     <img src="${posterUrl}" alt="${title}" style="width: 100%; max-width: 200px; border-radius: 8px;">
                     <h3 style="margin: 8px 0 4px; font-size: 16px;">${title}</h3>
                     <p style="margin: 0; font-size: 14px; color: #aaa;">Год: ${year} | ⭐ ${rating}</p>
@@ -56,8 +75,13 @@ async function searchDorama(query) {
         });
 
     } catch (error) {
-        console.error("Ошибка при запросе к TMDB:", error);
-        resultsContainer.innerHTML = `<p style="color: red; padding: 20px;">Произошла ошибка загрузки данных</p>`;
+        console.error("❌ Ошибка при запросе к TMDB:", error);
+        resultsContainer.innerHTML = `
+            <div style="color: red; padding: 40px; text-align: center; width: 100%;">
+                <h3>⚠️ Ошибка загрузки данных</h3>
+                <p>Проверьте подключение к интернету</p>
+            </div>
+        `;
     }
 }
 
@@ -65,7 +89,10 @@ async function searchDorama(query) {
 if (searchInput) {
     searchInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
+            console.log("⌨️ Нажата клавиша Enter!");
             searchDorama(searchInput.value);
         }
     });
+} else {
+    console.error("❌ Поле поиска не найдено! Проверьте id='search-input' в HTML");
 }
