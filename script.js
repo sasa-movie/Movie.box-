@@ -1,6 +1,7 @@
 // 1. Вставляем ваш бесплатный ключ и адрес TMDB API
 const API_KEY = "9714615b02661885225a819fe106562e"; // Ваш ключ со скриншота
-const API_URL = "https://themoviedb.org";
+const API_URL = "https://api.themoviedb.org/3"; // Правильный API URL
+const IMAGE_URL = "https://image.tmdb.org/t/p/w200"; // Базовый URL для постеров
 
 // 2. Находим элементы на странице
 const searchInput = document.querySelector('.search-input') || document.querySelector('input[type="text"]');
@@ -33,8 +34,8 @@ async function searchDorama(query) {
             
             // Если у сериала есть постер, формируем на него ссылку, иначе ставим заглушку
             const posterUrl = dorama.poster_path 
-                ? `https://tmdb.org{dorama.poster_path}` 
-                : 'https://placeholder.com';
+                ? `${IMAGE_URL}${dorama.poster_path}` // Исправлено: правильный URL
+                : 'https://via.placeholder.com/200x300?text=Нет+постера';
 
             // Берем название (name) и дату первого выхода (first_air_date)
             const title = dorama.name || dorama.original_name;
