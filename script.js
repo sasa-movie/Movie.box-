@@ -1,5 +1,7 @@
 <script>
    document.addEventListener('DOMContentLoaded', function () {
+      curl -X GET "https://api.mydramalist.com/v1/titles/[id]"
+   -H "Content-Type: application/json"
       curl "api_endpoint_here"
   -H "mdl-api-key: [9714615b02661885225a819fe106562e]"
     console.log("Скрипт Movie Box успешно запущен!");
