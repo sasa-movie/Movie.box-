@@ -1,118 +1,65 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta name="yandex-verification" content="5d3162ade9af2ba5" />
-    <link rel="stylesheet" href="style.css">
+// 1. API ключ и адреса
+const API_KEY = "9714615b026618852258a19fe106562e";
+const API_URL = "https://api.themoviedb.org/3";
+const IMAGE_URL = "https://image.tmdb.org/t/p/w200";
 
-    <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109808243', 'ym');
+// 2. Находим элементы
+const searchInput = document.getElementById('search-input'); // ищем по id
+const resultsContainer = document.querySelector('.movies-grid'); // контейнер для карточек
 
-    ym(109808243, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/109808243" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-    <title>Sasa movie box Дорамы и Фильмы Онлайн в хорошем качестве</title>
-    <h1> Sasa Movie Box — Фильмы и Дорамы Онлайн</h1>
-    <link rel="stylesheet" href="style.css">
+// 3. Функция поиска
+async function searchDorama(query) {
+    if (!query.trim()) return;
 
+    try {
+        const response = await fetch(`${API_URL}/search/tv?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`);
+        const data = await response.json();
 
-</head>
-<body>
+        // Очищаем контейнер
+        resultsContainer.innerHTML = "";
 
-    <h2><!-- Поле поиска -->
-<div class="search-container">
-    <input type="text" id="search-input" placeholder="Поиск дорам и фильмов¹...">
-</div>
-</h2>
+        const doramas = data.results;
 
-    <div class="container">
-        
-        
-        <div class="movies-grid">
+        if (!doramas || doramas.length === 0) {
+            resultsContainer.innerHTML = `<p style="color: white; padding: 20px;">Ничего не найдено</p>`;
+            return;
+        }
 
-            <!-- ================= ФИЛЬМ №1 (ОБРАЗЕЦ) ================= -->
-            <div class="movie-card">
-                <h2 class="movie-title">Криминальный город 1</h2>
-                <div class="movie-info">
-                    <p><strong>Жанр:</strong> Боевик, Криминал</p>
-                    <p><strong>Год:</strong> 2019</p>
-                    <p><strong>Описание:</strong> История о мужчине .</p>
+        // Отображаем каждую дораму
+        doramas.forEach(dorama => {
+            const card = document.createElement('div');
+            card.className = 'movie-card'; // используем существующий класс
+
+            const posterUrl = dorama.poster_path
+                ? `${IMAGE_URL}${dorama.poster_path}`
+                : 'https://via.placeholder.com/200x300?text=Нет+постера';
+
+            const title = dorama.name || dorama.original_name || 'Без названия';
+            const year = dorama.first_air_date ? dorama.first_air_date.substring(0, 4) : '—';
+            const rating = dorama.vote_average ? dorama.vote_average.toFixed(1) : '0';
+
+            card.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; color: white;">
+                    <img src="${posterUrl}" alt="${title}" style="width: 100%; max-width: 200px; border-radius: 8px;">
+                    <h3 style="margin: 8px 0 4px;">${title}</h3>
+                    <p style="margin: 0; font-size: 14px; color: #aaa;">Год: ${year} | ⭐ ${rating}</p>
                 </div>
-                <div class="player-box">
-                    <!-- Замените ссылку в src на свою, когда найдете плеер фильма -->
-                    <iframe src="https://vkvideo.ru/video_ext.php?oid=-224007491&id=456239348&hash=" width="640" height="360" frameborder="0" allowfullscreen="1" style="background-color: #000" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
-                </div>
-            </div>
-            <!-- ================= КОНЕЦ ФИЛЬМА №1 ================= -->
+            `;
 
+            resultsContainer.appendChild(card);
+        });
 
-            <!-- ================= ФИЛЬМ №2 (ОБРАЗЕЦ) ================= -->
-            <div class="movie-card">
-                <h2 class="movie-title">Криминальный город 2</h2>
-                <div class="movie-info">
-                    <p><strong>Жанр:</strong> боевик</p>
-                    <p><strong>Год:</strong> 2021</p>
-                    <p><strong>Описание:</strong> Боевик мощный!.</p>
-                </div>
-                <div class="player-box">
-                    <!-- Замените ссылку в src на свою -->
-                    <iframe src="https://vkvideo.ru/video_ext.php?oid=-220018529&id=456244764&hash=" width="640" height="360" frameborder="0" allowfullscreen="1" style="background-color: #000" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
-            </div>
-            <!-- ================= КОНЕЦ ФИЛЬМА №2 ================= -->
+    } catch (error) {
+        console.error("Ошибка:", error);
+        resultsContainer.innerHTML = `<p style="color: red; padding: 20px;">Ошибка загрузки данных</p>`;
+    }
+}
 
-
-            <!-- ================= ФИЛЬМ №3 ================= -->
-            <div class="movie-card">
-                <h2 class="movie-title">Истинное образование все серии</h2>
-                <div class="movie-info">
-                    <p><strong>Жанр:</strong> Школа, Боевик, Триллер</p>
-                    <p><strong>Год:</strong> 2026</p>
-                    <p><strong>Описание:</strong> Учитель с командой наказывают всех.</p>
-                </div>
-                <div class="player-box">
-                    <!-- Исправленный и рабочий плеер Rutube -->
-                    <iframe src="https://vkvideo.ru/video_ext.php?oid=-221158359&id=456242469&hash=" width="640" height="360" frameborder="0" allowfullscreen="1" style="background-color: #000" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
-                </div>
-            </div>
-            <!-- ================= КОНЕЦ ФИЛЬМА №3 ================= -->
-        <!-- ================= ФИЛЬМ №4 ================= -->
-            <div class="movie-card">
-                <h2 class="movie-title">Охотничьи псы 1сезон все серии</h2>
-                <div class="movie-info">
-                    <p><strong>Жанр:</strong> Криминал, Боевик, Триллер</p>
-                    <p><strong>Год:</strong> 2023</p>
-                    <p><strong>Описание:</strong> История о двух боксёров.</p>
-                </div>
-                <div class="player-box">
-                    <!-- Исправленный и рабочий плеер Rutube -->
-                   <iframe src="https://vkvideo.ru/video_ext.php?oid=-231633198&id=456240265&hash=" width="640" height="360" frameborder="0" allowfullscreen="1" style="background-color: #000" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe> 
-                </div>
-            </div>
-            <!-- ================= КОНЕЦ ФИЛЬМА №4 ================= -->
-            <!-- ================= ФИЛЬМ №5 ================= -->
-            <div class="movie-card">
-                <h2 class="movie-title">Охотничьи псы 2 чезон все серии</h2>
-                <div class="movie-info">
-                    <p><strong>Жанр:</strong> Криминал, Боевик, Триллер</p>
-                    <p><strong>Год:</strong> 2025</p>
-                    <p><strong>Описание:</strong> История двух боксеров,продолженяи.</p>
-                </div>
-                <div class="player-box">
-                    <!-- Исправленный и рабочий плеер Rutube -->
-                  <iframe src="https://vkvideo.ru/video_ext.php?oid=-231633198&id=456240266&hash=" width="640" height="360" frameborder="0" allowfullscreen="1" style="background-color: #000" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>  
-                </div>
-            </div>
-            <!-- ================= КОНЕЦ ФИЛЬМА №5 ================= -->
-
-        </div>
-    </div>
-        <script src="script.js"></script>
-        
-</body>
-</html>
+// 4. Обработчик нажатия Enter
+if (searchInput) {
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            searchDorama(searchInput.value);
+        }
+    });
+}
